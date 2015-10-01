@@ -32,16 +32,26 @@ public class MathUtil {
 		}
 	}
 	
-    /**
+	/**
      * Normalise an angle to the range (-180, 180]
      * 
      * @param angle 
      * @return
      */
-    static public double[] normaliseAngle(double[] angle) {
+	static public double normaliseAngle(double angle) {
+    	return ((angle + 180.0) % 360.0 + 360.0) % 360.0 - 180.0;
+	}
+	
+    /**
+     * Normalise an array of angles to the range (-180, 180]
+     * 
+     * @param angles
+     * @return
+     */
+    static public double[] normaliseAngleArray(double[] angles) {
         double[] normal = new double[3];
         for (int i = 0; i < 3; i++) {
-        	normal[i] = ((angle[i] + 180.0) % 360.0 + 360.0) % 360.0 - 180.0;
+        	normal[i] = normaliseAngle(angles[i]);
         }
     	return normal;
     }
@@ -133,34 +143,39 @@ public class MathUtil {
      */
     public static double[][] rotationMatrix(double[] angle) {
     	// From  Slide 20 in Geom.
-    	double rads = Math.PI/180*angle[0];
+    	double radx = Math.PI/180*angle[0];
+    	double rady = Math.PI/180*angle[1];
+    	double radz = Math.PI/180*angle[2];
     	// TODO: Make these the correct 4x4 matrices
-    	double[][] mx = new double[][]{{Math.cos(rads),-Math.sin(rads), 0},
-            						   {Math.sin(rads), Math.cos(rads), 0},
-					   				   {0			  , 0			  , 1}};
+    	double[][] mx = new double[][]{{1, 0		     ,	0			  , 0},
+            						   {0, Math.cos(radx), -Math.sin(radx), 0},
+					   				   {0, Math.sin(radx),  Math.cos(radx), 0},
+					   				   {0, 0			 , 	0			  ,	1}};
 
-        double[][] my = new double[][]{{Math.cos(rads),-Math.sin(rads), 0},
-        							   {Math.sin(rads), Math.cos(rads), 0},
-        							   {0			  , 0			  , 1}};
+    	double[][] my = new double[][]{{ Math.cos(rady), 0,	Math.sin(rady), 0},
+            						   { 0			   , 1, 0			  , 0},
+					   				   {-Math.sin(rady), 0, Math.cos(rady), 0},
+					   				   { 0			   , 0, 0			  ,	1}};
 
-        double[][] mz = new double[][]{{Math.cos(rads),-Math.sin(rads), 0},
-					                   {Math.sin(rads), Math.cos(rads), 0},
-					                   {0			  , 0			  , 1}};
-
+		double[][] mz = new double[][]{{Math.cos(radz), -Math.sin(radz), 0, 0},
+		    						   {Math.sin(radz),  Math.cos(radz), 0, 0},
+					   				   {0			  ,  0			   , 1, 0},
+					   				   {0			  ,  0			   , 0,	1}};
     	return multiply(mx, multiply(my,mz));    
     }
 
     /**
-     * TODO: A 2D scale matrix that scales both axes by the same factor
+     * TODO: A 3D scale matrix that scales both all by the same factor
      * 
      * @param scale
      * @return
      */
     public static double[][] scaleMatrix(double scale) {
     	// From  Slide 24 in Geom.
-    	double[][] m = new double[][]{{scale, 0    , 0},
-    			 					  {0    , scale, 0},
-    			 					  {0    , 0    , 1}};
+    	double[][] m = new double[][]{{scale, 0    , 0    , 0},
+									  {0    , scale, 0    , 0},
+									  {0    , 0    , scale, 0},
+    			 					  {0    , 0    , 0    , 1}};
         return m;
     }
 

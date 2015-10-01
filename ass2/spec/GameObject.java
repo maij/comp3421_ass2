@@ -313,8 +313,8 @@ public class GameObject {
      * @return the global rotation of the object (in degrees) and 
      * normalized to the range (-180, 180) degrees. 
      */
-    public double getGlobalRotation() {
-        double rotation;
+    public double[] getGlobalRotation() {
+        double[] rotation = new double[]{0.0, 0.0, 0.0};
         // Start with this node
         GameObject parent = this;
         double[][] m = MathUtil.identity();
@@ -327,7 +327,8 @@ public class GameObject {
         	parent = parent.getParent();
         }
         // As defined in Slide 39, must convert to degrees
-        rotation = MathUtil.normaliseAngle(Math.atan2(m[1][0],m[0][0])*180/Math.PI);
+        // TODO: Calculate x, y and z rotations.
+//        rotation = MathUtil.normaliseAngle(Math.atan2(m[1][0],m[0][0])*180/Math.PI);
     	return rotation;
     }
 
@@ -365,15 +366,14 @@ public class GameObject {
      * @param parent
      */
     public void setParent(GameObject parent) {
-        double[] p = new double[2];
-        double r;
+        double[] p;
+        double[] r;
         double s;
         
         // TODO: Figure out if I can use push and pop matrix to do this...
         
         // Find what my current global coordinates are
-        p[0] = getGlobalPosition()[0];
-        p[1] = getGlobalPosition()[1];
+        p 	 = getGlobalPosition();
         r 	 = getGlobalRotation();
         s 	 = getGlobalScale();
         // Original matrix
@@ -387,7 +387,10 @@ public class GameObject {
         // Find what my current global settings are, and construct the opposite
         p[0] = -parent.getGlobalPosition()[0];
         p[1] = -parent.getGlobalPosition()[1];
-        r 	 = -parent.getGlobalRotation();
+        p[2] = -parent.getGlobalPosition()[2];
+        r[0] 	 = -parent.getGlobalRotation()[0];
+        r[1] 	 = -parent.getGlobalRotation()[1];
+        r[2] 	 = -parent.getGlobalRotation()[2];
         s 	 = 1/parent.getGlobalScale();
         double[][] m1 = MathUtil.multiply(MathUtil.multiply(MathUtil.scaleMatrix(s),
 												    		MathUtil.rotationMatrix(r)),
@@ -398,7 +401,7 @@ public class GameObject {
         // To make M = m0, find PN.
         // PN = (P0*P1*P2...PN-1)^-1 * M
         double [][] m = MathUtil.multiply(m1, m0);
-        this.setPosition(m[0][2], m[1][2]);
+        this.setPosition(m[0][3], m[1][3], m[2][3]);
         this.setRotation(Math.atan2(m[1][0],m[0][0])*180/Math.PI);
         this.setScale(Math.sqrt(m[0][0]*m[0][0] + m[1][0]*m[1][0]));
     }
