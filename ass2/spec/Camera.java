@@ -28,15 +28,15 @@ public class Camera extends GameObject {
 	    public void setView(GL2 gl) {
 	    	gl.glClearColor(myBackground[0], myBackground[1],
 	    				    myBackground[2], myBackground[3]);
-	    	gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
-	      
+	    	gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+	    	gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 	    	gl.glLoadIdentity();
-	        gl.glTranslated(-getGlobalPosition()[0],-getGlobalPosition()[1], -getGlobalPosition()[2]);
 	        gl.glRotated(-getGlobalRotation()[0],1,0,0); //rotate about x
 	        gl.glRotated(-getGlobalRotation()[1],0,1,0); //rotate about y
 	        gl.glRotated(-getGlobalRotation()[2],0,0,1); //rotate about z
 	        gl.glScaled(1/getGlobalScale(), 1/getGlobalScale(), 1/getGlobalScale());
-
+	        gl.glTranslated(-getGlobalPosition()[0],-getGlobalPosition()[1], -getGlobalPosition()[2]);
+	        
 	    }
 
 	    public void reshape(GL2 gl, int x, int y, int width, int height) {
@@ -63,12 +63,13 @@ public class Camera extends GameObject {
 	        }        
 	        GLU myGLU = new GLU();
 	        // coordinate system (left, right, bottom, top)
-	        myGLU.gluOrtho2D(left, right, bottom, top);                
+	        myGLU.gluOrtho2D(left, right, bottom, top);   
+//	        myGLU.gluLookAt(3, 3, 3, 0.01, 0.01, 0.01, 0, 1, 0);
 	    }
 
 	    @Override
 		public void update(double dt) {
-	    	this.rotate(new double[]{dt*20,dt*20,dt*20});
-	    	
+//	    	this.rotate(new double[]{dt*50,dt*50,dt*50});
+//	    	this.translate(dt*0.01, dt*0.01, dt*0.01);
 	    }
 }

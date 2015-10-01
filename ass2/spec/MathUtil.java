@@ -83,7 +83,7 @@ public class MathUtil {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 m[i][j] = 0;
-                for (int k = 0; k < 3; k++) {
+                for (int k = 0; k < 4; k++) {
                    m[i][j] += p[i][k] * q[k][j]; 
                 }
             }
@@ -95,8 +95,8 @@ public class MathUtil {
     /**
      * Multiply a vector by a matrix
      * 
-     * @param m A 3x3 matrix
-     * @param v A 3x1 vector
+     * @param m A 4x4 matrix
+     * @param v A 4x1 vector
      * @return
      */
     public static double[] multiply(double[][] m, double[] v) {
@@ -118,7 +118,9 @@ public class MathUtil {
      */
     public static double[] decompose_rotation(double[][] m) {
     	double thetaX = 0.0, thetaY = 0.0, thetaZ = 0.0;
-	    thetaX = Math.asin(m[3][2]);
+	    /*
+	     thetaX = Math.asin(m[3][2]);
+	     
 	    if (thetaX < (Math.PI / 2)) {
 	        if (thetaX > (-Math.PI / 2)) {
 	            thetaZ = Math.atan2(-m[1][2], m[2][2]);
@@ -131,7 +133,13 @@ public class MathUtil {
 	        thetaZ = Math.atan2(m[1][3], m[1][1]);
 	        thetaY = 0;
         }
-    	return normaliseAngleArray(new double[]{thetaX, thetaY, thetaZ});
+        */
+    	thetaZ = Math.atan2(-m[0][1], m[0][0]);
+    	thetaX = Math.atan2(-m[1][2], m[2][2]);
+    	thetaY = Math.atan2(-m[0][2], m[0][0]/Math.cos(thetaZ));
+    	return normaliseAngleArray(new double[]{thetaX*180/Math.PI,
+    											thetaY*180/Math.PI,
+    											thetaZ*180/Math.PI});
     }
 
     /**
@@ -148,7 +156,6 @@ public class MathUtil {
     }
 
     /**
-     * TODO: A 3D rotation matrix for the given angle
      * 
      * @param angle in degrees
      * @return

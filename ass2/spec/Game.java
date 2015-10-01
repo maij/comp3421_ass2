@@ -16,8 +16,6 @@ import javax.media.opengl.awt.GLJPanel;
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
 
-import javafx.scene.input.KeyCode;
-
 
 
 /**
@@ -50,8 +48,8 @@ public class Game extends JFrame implements GLEventListener{
           
           myCamera = new Camera(GameObject.ROOT);
           myCamera.setScale(2);
-          myCamera.setPosition(2, 2, 2);
-          myCamera.setRotation(new double[]{-45, -45, 0});
+          myCamera.setPosition(0, 0, -1.1);
+          myCamera.setRotation(new double[]{-45, -45, -45});
           myCamera.setBackground(new float[]{1f,1f,1f,1f});
           
           panel.addKeyListener(
@@ -59,14 +57,12 @@ public class Game extends JFrame implements GLEventListener{
 		  			@Override
 		  			public void keyPressed(KeyEvent e) {
 		  				int key = e.getKeyCode();
-		  				System.out.println("Key pressed...");
 		  				switch(key) {
-		  					case KeyEvent.VK_UP   : myCamera.translate(0, 0, 1); break;
-		  					case KeyEvent.VK_DOWN : myCamera.translate(0, 0, -1); break;
-		  					case KeyEvent.VK_LEFT : myCamera.rotate(new double[]{0,-20,0}); break;
-		  					case KeyEvent.VK_RIGHT: myCamera.rotate(new double[]{0, 20,0}); break;
+		  					case KeyEvent.VK_UP   : myCamera.translate(0, 0, 0.1); break;
+		  					case KeyEvent.VK_DOWN : myCamera.translate(0, 0, -0.1); break;
+		  					case KeyEvent.VK_LEFT : myCamera.rotate(new double[]{0,-1,0}); break;
+		  					case KeyEvent.VK_RIGHT: myCamera.rotate(new double[]{0, 1,0}); break;
 		  				}
-//		  				myCamera.setView(gl);
 		  			}
 		  			@Override
 		  			public void keyReleased(KeyEvent e) {}
@@ -96,7 +92,9 @@ public class Game extends JFrame implements GLEventListener{
         Terrain terrain = LevelIO.load(new File(args[0]));
         Game game = new Game(terrain);
         
-        GameObject cube = new CubeObject(GameObject.ROOT);
+//        GameObject cube = new CubeObject(GameObject.ROOT);
+//        cube.translate(-0.5, -0.5, -0.5);
+        GameObject axes = new Axes(GameObject.ROOT);
         Camera camera = new Camera(GameObject.ROOT);
         game.setCamera(camera);
         game.run();
@@ -123,9 +121,18 @@ public class Game extends JFrame implements GLEventListener{
         GL2 gl = drawable.getGL().getGL2();
         myCamera.setView(gl);
         
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK,GL2.GL_FILL);
+        
         update();
         
         GameObject.ROOT.draw(gl);
+//        System.out.printf("rx = %f; ry = %f; rz = %f\n", myCamera.getGlobalRotation()[0],  
+//				 myCamera.getGlobalRotation()[1],
+//				 myCamera.getGlobalRotation()[2]);
+//        System.out.printf("px = %f; py = %f; pz = %f\n", myCamera.getGlobalPosition()[0],  
+//														 myCamera.getGlobalPosition()[1],
+//														 myCamera.getGlobalPosition()[2]);
+
 	}
 
 	@Override
@@ -136,8 +143,10 @@ public class Game extends JFrame implements GLEventListener{
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
-		// TODO Auto-generated method stub
+		GL2 gl = drawable.getGL().getGL2();
 		myTime = System.currentTimeMillis();
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
 	}
 
 	@Override

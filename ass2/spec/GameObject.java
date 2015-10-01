@@ -235,7 +235,15 @@ public class GameObject {
      * @param gl
      */
     public void drawSelf(GL2 gl) {
-        // do nothing
+        gl.glBegin(GL2.GL_QUADS);
+        {	
+        	gl.glColor4f(0,0,0,1);
+        	gl.glVertex3d(-100, 0, -100);
+        	gl.glVertex3d( 100, 0, -100);
+        	gl.glVertex3d( 100, 0,  100);
+        	gl.glVertex3d( 100, 0, -100);
+        }
+        gl.glEnd();
     }
 
     /**
@@ -253,7 +261,9 @@ public class GameObject {
         // Perform matrix operations
         // TRS Ordering
         gl.glTranslated(myTranslation[0], myTranslation[1], myTranslation[2]);
-        gl.glRotated   (myRotation[0], myRotation[1], myRotation[2], 1);
+        gl.glRotated   (myRotation[0], 1, 0, 0);
+        gl.glRotated   (myRotation[1], 0, 1, 0);
+        gl.glRotated   (myRotation[2], 0, 0, 1);
         gl.glScaled	   (myScale, myScale, myScale);
         // Draw self, then draw children
         drawSelf(gl);
@@ -286,9 +296,14 @@ public class GameObject {
         						  MathUtil.multiply(MathUtil.rotationMatrix(parent.getRotation()),
         								  			MathUtil.scaleMatrix(parent.getScale())));
         	// Multiplying in this order means the parent transforms are applied last
+//        	System.out.println("Tl");
+//        	MathUtil.printMatrix(m);
         	m = MathUtil.multiply(parent_m, m);
+        	
         	parent = parent.getParent();
         }
+//        System.out.println("DONE - LAST MATRIX");
+//        MathUtil.printMatrix(m);
         p[0] = m[0][3];
         p[1] = m[1][3];
         p[2] = m[2][3];

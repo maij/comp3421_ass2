@@ -59,4 +59,8 @@ public class CubeObject extends GameObject {
 		gl.glEnd();
 	}
 
+		@Override
+		public void update(double dt) {
+//			this.rotate(new double[]{dt*10,dt*10,dt*10});
+		}
 }
