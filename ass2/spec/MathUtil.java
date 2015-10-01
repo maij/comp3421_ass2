@@ -112,17 +112,29 @@ public class MathUtil {
 
         return u;
     }
-
-
-
-    // ===========================================
-    // COMPLETE THE METHODS BELOW
-    // ===========================================
-    
+    /**
+     * Extracts the x, y and z rotations from a matrix
+     * @return Double array of x, y, z rotations.
+     */
+    public static double[] decompose_rotation(double[][] m) {
+    	double thetaX = 0.0, thetaY = 0.0, thetaZ = 0.0;
+	    thetaX = Math.asin(m[3][2]);
+	    if (thetaX < (Math.PI / 2)) {
+	        if (thetaX > (-Math.PI / 2)) {
+	            thetaZ = Math.atan2(-m[1][2], m[2][2]);
+	            thetaY = Math.atan2(-m[3][1], m[3][3]);
+	        } else {
+	           thetaZ = -Math.atan2(-m[1][3], m[1][1]);
+	           thetaY = 0;
+	        }
+	    } else {
+	        thetaZ = Math.atan2(m[1][3], m[1][1]);
+	        thetaY = 0;
+        }
+    	return normaliseAngleArray(new double[]{thetaX, thetaY, thetaZ});
+    }
 
     /**
-     * TODO: A 3D translation matrix for the given offset vector
-     * 
      * @param v origin offset vector.
      * @return
      */

@@ -13,8 +13,6 @@ import javax.media.opengl.GL2;
  * 
  * Each GameObject is offset from its parent by a rotation, a translation and a scale factor. 
  *
- * TODO: The methods you need to complete are at the bottom of the class
- *
  * @author malcolmr
  */
 public class GameObject {
@@ -240,15 +238,8 @@ public class GameObject {
         // do nothing
     }
 
-    
-    // ===========================================
-    // COMPLETE THE METHODS BELOW
-    // ===========================================
-    
     /**
      * Draw the object and all of its descendants recursively.
-     * 
-     * TODO: Complete this method
      * 
      * @param gl
      */
@@ -280,12 +271,10 @@ public class GameObject {
     /**
      * Compute the object's position in world coordinates
      * 
-     * TODO: Write this method
-     * 
      * @return a point in world coordinates in [x,y] form
      */
     public double[] getGlobalPosition() {
-        double[] p = new double[2];
+        double[] p = new double[3];
         // Go up the scene tree, my global position should be my local translation surmounted by my 
         // parents TRS operations
        
@@ -300,21 +289,19 @@ public class GameObject {
         	m = MathUtil.multiply(parent_m, m);
         	parent = parent.getParent();
         }
-        p[0] = m[0][2];
-        p[1] = m[1][2];
+        p[0] = m[0][3];
+        p[1] = m[1][3];
+        p[2] = m[2][3];
         return p; 
     }
 
     /**
      * Compute the object's rotation in the global coordinate frame
      * 
-     * TODO: Write this method
-     * 
      * @return the global rotation of the object (in degrees) and 
      * normalized to the range (-180, 180) degrees. 
      */
     public double[] getGlobalRotation() {
-        double[] rotation = new double[]{0.0, 0.0, 0.0};
         // Start with this node
         GameObject parent = this;
         double[][] m = MathUtil.identity();
@@ -326,16 +313,12 @@ public class GameObject {
         	m = MathUtil.multiply(parent_m, m);
         	parent = parent.getParent();
         }
-        // As defined in Slide 39, must convert to degrees
-        // TODO: Calculate x, y and z rotations.
-//        rotation = MathUtil.normaliseAngle(Math.atan2(m[1][0],m[0][0])*180/Math.PI);
-    	return rotation;
+
+        return MathUtil.decompose_rotation(m);
     }
 
     /**
      * Compute the object's scale in global terms
-     * 
-     * TODO: Write this method
      * 
      * @return the global scale of the object 
      */
@@ -348,20 +331,15 @@ public class GameObject {
         						  MathUtil.multiply(MathUtil.rotationMatrix(parent.getRotation()),
         								  			MathUtil.scaleMatrix(parent.getScale())));
         	// Multiplying in this order means the parent transforms are applied last
-        	m = MathUtil.multiply(parent_m, m
-        			);
+        	m = MathUtil.multiply(parent_m, m);
         	parent = parent.getParent();
         }
-        scale = Math.sqrt(m[0][0]*m[0][0] + m[0][1]*m[0][1]);
+        scale = Math.sqrt(m[0][0]*m[0][0] + m[0][1]*m[0][1] + m[0][2]*m[0][2]);
         return scale;
     }
 
     /**
      * Change the parent of a game object.
-     * 
-     * TODO: add code so that the object does not change its global position, rotation or scale
-     * when it is reparented. You may need to add code before and/or after 
-     * the fragment of code that has been provided - depending on your approach
      * 
      * @param parent
      */
@@ -369,8 +347,6 @@ public class GameObject {
         double[] p;
         double[] r;
         double s;
-        
-        // TODO: Figure out if I can use push and pop matrix to do this...
         
         // Find what my current global coordinates are
         p 	 = getGlobalPosition();
@@ -388,9 +364,11 @@ public class GameObject {
         p[0] = -parent.getGlobalPosition()[0];
         p[1] = -parent.getGlobalPosition()[1];
         p[2] = -parent.getGlobalPosition()[2];
-        r[0] 	 = -parent.getGlobalRotation()[0];
-        r[1] 	 = -parent.getGlobalRotation()[1];
-        r[2] 	 = -parent.getGlobalRotation()[2];
+        
+        r[0] = -parent.getGlobalRotation()[0];
+        r[1] = -parent.getGlobalRotation()[1];
+        r[2] = -parent.getGlobalRotation()[2];
+        
         s 	 = 1/parent.getGlobalScale();
         double[][] m1 = MathUtil.multiply(MathUtil.multiply(MathUtil.scaleMatrix(s),
 												    		MathUtil.rotationMatrix(r)),
@@ -401,8 +379,11 @@ public class GameObject {
         // To make M = m0, find PN.
         // PN = (P0*P1*P2...PN-1)^-1 * M
         double [][] m = MathUtil.multiply(m1, m0);
+        // Origin point
         this.setPosition(m[0][3], m[1][3], m[2][3]);
-        this.setRotation(Math.atan2(m[1][0],m[0][0])*180/Math.PI);
-        this.setScale(Math.sqrt(m[0][0]*m[0][0] + m[1][0]*m[1][0]));
+        // ???
+        this.setRotation(MathUtil.decompose_rotation(m));
+        // modulus of the i vector
+        this.setScale(Math.sqrt(m[0][0]*m[0][0] + m[1][0]*m[1][0] + m[2][0]*m[2][0]));
     }
 }
