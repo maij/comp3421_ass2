@@ -19,7 +19,14 @@ public class TerrainGameObject extends GameObject {
 			System.out.println("ERR: Terrain not set");
 			return;
 		}
-		gl.glBegin(GL.GL_TRIANGLES);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
+        // Transform the object before drawing it
+        gl.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
+		gl.glRotated(getRotation()[0], 1, 0, 0);
+		gl.glRotated(getRotation()[1], 0, 1, 0);
+		gl.glRotated(getRotation()[2], 0, 0, 1);
+		gl.glScaled(getScale(), getScale(), getScale());
+        gl.glBegin(GL.GL_TRIANGLES);
 		{
 			gl.glColor4d(0.3, 0.2, 0.3, 1);
 			// Use the 3 points around to draw triangles
@@ -41,6 +48,7 @@ public class TerrainGameObject extends GameObject {
 			
 		}
 		gl.glEnd();
+		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 	}
 
 }

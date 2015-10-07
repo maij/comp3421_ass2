@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -49,6 +50,11 @@ public class Game extends JFrame implements GLEventListener{
 
           TerrainGameObject terrain = new TerrainGameObject(GameObject.ROOT);
           terrain.setTerrain(myTerrain);
+          drawWorldObjects();
+          drawTrees(myTerrain.trees());
+          
+          
+          terrain.translate(5, 0, 5);
           
           myCamera = new Camera(GameObject.ROOT);
           myCamera.translate(0, 0.5, 0);
@@ -97,8 +103,7 @@ public class Game extends JFrame implements GLEventListener{
         Terrain terrain = LevelIO.load(new File(args[0]));
         Game game = new Game(terrain);
         
-        game.drawWorldObjects();
-        game.drawTrees(terrain.trees());
+        
         game.run();
     }
     
@@ -141,7 +146,7 @@ public class Game extends JFrame implements GLEventListener{
         myCamera.setView(gl);
         
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-        
+        gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
         update();
         
         GameObject.ROOT.draw(gl);
@@ -157,8 +162,8 @@ public class Game extends JFrame implements GLEventListener{
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		myTime = System.currentTimeMillis();
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		
+		gl.glEnable(GL2.GL_DEPTH_TEST | GL2.GL_CULL_FACE);
+		gl.glCullFace(GL2.GL_BACK);
 	}
 
 	@Override

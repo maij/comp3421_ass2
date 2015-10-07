@@ -118,22 +118,7 @@ public class MathUtil {
      */
     public static double[] decompose_rotation(double[][] m) {
     	double thetaX = 0.0, thetaY = 0.0, thetaZ = 0.0;
-	    /*
-	     thetaX = Math.asin(m[3][2]);
-	     
-	    if (thetaX < (Math.PI / 2)) {
-	        if (thetaX > (-Math.PI / 2)) {
-	            thetaZ = Math.atan2(-m[1][2], m[2][2]);
-	            thetaY = Math.atan2(-m[3][1], m[3][3]);
-	        } else {
-	           thetaZ = -Math.atan2(-m[1][3], m[1][1]);
-	           thetaY = 0;
-	        }
-	    } else {
-	        thetaZ = Math.atan2(m[1][3], m[1][1]);
-	        thetaY = 0;
-        }
-        */
+	    
     	thetaX = Math.atan2(m[2][1], m[2][2]);
     	thetaY = Math.atan2(-m[2][0], Math.sqrt(m[2][1]*m[2][1] + m[2][2]*m[2][2]));
     	thetaZ = Math.atan2(m[1][0], m[0][0]);
