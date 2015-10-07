@@ -133,7 +133,6 @@ public class Terrain {
         double altitude = 0;
 
         
-        
         return altitude;
     }
 

@@ -1,5 +1,6 @@
 package ass2.spec;
 
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -45,9 +46,12 @@ public class Game extends JFrame implements GLEventListener{
           GLCapabilities caps = new GLCapabilities(glp);
           GLJPanel panel = new GLJPanel(caps);
           panel.addGLEventListener(this);
+
+          TerrainGameObject terrain = new TerrainGameObject(GameObject.ROOT);
+          terrain.setTerrain(myTerrain);
           
           myCamera = new Camera(GameObject.ROOT);
-          myCamera.translate(0, 0.5, 1.5);
+          myCamera.translate(0, 0.5, 0);
           myCamera.scale(2);
           myCamera.setBackground(new float[]{1f,1f,1f,1f});
           
@@ -92,17 +96,27 @@ public class Game extends JFrame implements GLEventListener{
     public static void main(String[] args) throws FileNotFoundException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         Game game = new Game(terrain);
-
-        GameObject cubeFront = new CubeObject(GameObject.ROOT);
+        
+        game.drawWorldObjects();
+        game.drawTrees(terrain.trees());
+        game.run();
+    }
+    
+    public void drawWorldObjects() {
+    	GameObject cubeFront = new CubeObject(GameObject.ROOT);
         GameObject cubeBack = new CubeObject(GameObject.ROOT);
         GameObject cubeLeft = new CubeObject(GameObject.ROOT);
         GameObject cubeRight = new CubeObject(GameObject.ROOT);
-        cubeLeft.translate(3, 0, 1.5);
-        cubeRight.translate(-3, 0, 1.5);
+        cubeFront.translate(0, 0, -3);
         cubeBack.translate(0, 0, 3);
+        cubeLeft.translate(-3, 0, 0);
+        cubeRight.translate(3, 0, 0);
         GameObject axes = new Axes(GameObject.ROOT);
         axes.scale(2);
-        game.run();
+    }
+        
+    public void drawTrees(List<Tree> t) {
+    	
     }
     
     private void update() {
