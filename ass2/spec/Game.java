@@ -47,9 +47,8 @@ public class Game extends JFrame implements GLEventListener{
           panel.addGLEventListener(this);
           
           myCamera = new Camera(GameObject.ROOT);
-          myCamera.setScale(2);
-          myCamera.setPosition(0, 0, -1.1);
-          myCamera.setRotation(new double[]{-45, -45, -45});
+          myCamera.translate(0, 0.5, 1.5);
+          myCamera.scale(2);
           myCamera.setBackground(new float[]{1f,1f,1f,1f});
           
           panel.addKeyListener(
@@ -58,10 +57,12 @@ public class Game extends JFrame implements GLEventListener{
 		  			public void keyPressed(KeyEvent e) {
 		  				int key = e.getKeyCode();
 		  				switch(key) {
-		  					case KeyEvent.VK_UP   : myCamera.translate(0, 0, 0.1); break;
-		  					case KeyEvent.VK_DOWN : myCamera.translate(0, 0, -0.1); break;
-		  					case KeyEvent.VK_LEFT : myCamera.rotate(new double[]{0,-1,0}); break;
-		  					case KeyEvent.VK_RIGHT: myCamera.rotate(new double[]{0, 1,0}); break;
+		  					case KeyEvent.VK_UP   : myCamera.translate(0, 0, -0.1); break;
+		  					case KeyEvent.VK_DOWN : myCamera.translate(0, 0, 0.1); break;
+		  					case KeyEvent.VK_LEFT : myCamera.rotate(new double[]{0,  5, 0}); break;
+		  					case KeyEvent.VK_RIGHT: myCamera.rotate(new double[]{0, -5, 0}); break;
+		  					case KeyEvent.VK_B	  : myCamera.scale(2); break;
+		  					case KeyEvent.VK_S	  : myCamera.scale(0.5); break;
 		  				}
 		  			}
 		  			@Override
@@ -91,12 +92,16 @@ public class Game extends JFrame implements GLEventListener{
     public static void main(String[] args) throws FileNotFoundException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         Game game = new Game(terrain);
-        
-//        GameObject cube = new CubeObject(GameObject.ROOT);
-//        cube.translate(-0.5, -0.5, -0.5);
+
+        GameObject cubeFront = new CubeObject(GameObject.ROOT);
+        GameObject cubeBack = new CubeObject(GameObject.ROOT);
+        GameObject cubeLeft = new CubeObject(GameObject.ROOT);
+        GameObject cubeRight = new CubeObject(GameObject.ROOT);
+        cubeLeft.translate(3, 0, 1.5);
+        cubeRight.translate(-3, 0, 1.5);
+        cubeBack.translate(0, 0, 3);
         GameObject axes = new Axes(GameObject.ROOT);
-        Camera camera = new Camera(GameObject.ROOT);
-        game.setCamera(camera);
+        axes.scale(2);
         game.run();
     }
     
@@ -121,18 +126,11 @@ public class Game extends JFrame implements GLEventListener{
         GL2 gl = drawable.getGL().getGL2();
         myCamera.setView(gl);
         
-        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK,GL2.GL_FILL);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
         
         update();
         
         GameObject.ROOT.draw(gl);
-//        System.out.printf("rx = %f; ry = %f; rz = %f\n", myCamera.getGlobalRotation()[0],  
-//				 myCamera.getGlobalRotation()[1],
-//				 myCamera.getGlobalRotation()[2]);
-//        System.out.printf("px = %f; py = %f; pz = %f\n", myCamera.getGlobalPosition()[0],  
-//														 myCamera.getGlobalPosition()[1],
-//														 myCamera.getGlobalPosition()[2]);
-
 	}
 
 	@Override

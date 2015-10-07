@@ -123,7 +123,7 @@ public class GameObject {
      * @return
      */
     public void setRotation(double[] rotation) {
-//        myRotation = MathUtil.normaliseAngle(rotation);
+        myRotation = MathUtil.normaliseAngleArray(rotation);
     }
 
     /**

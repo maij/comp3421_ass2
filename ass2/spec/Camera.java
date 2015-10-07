@@ -4,13 +4,14 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 public class Camera extends GameObject {
-
+	
 	 	private float[] myBackground;
 	    
 	    public Camera(GameObject parent) {
 	        super(parent);
 
 	        myBackground = new float[]{1,1,1,1}; // Default to white background
+	        // Note: Replace this by parent's matrix
 	    }
 
 	    public Camera() {
@@ -19,6 +20,17 @@ public class Camera extends GameObject {
 	    
 	    public float[] getBackground() {
 	        return myBackground;
+	    }
+	    
+	    // Pre-multiplying all operations
+	    @Override
+	    public void translate(double dx, double dy, double dz) {
+	    	double[] pos = getPosition();
+	    	double[][] m = MathUtil.multiply(MathUtil.rotationMatrix(getRotation()),
+								MathUtil.translationMatrix(new double[]{dx,dy,dz}));
+	    	double[] newPos = new double[]{m[0][3],m[1][3],m[2][3]};
+//	    	System.out.printf("%f %f %f\n", pos[0] + newPos[0], pos[1] + newPos[1], pos[2] + newPos[2]);
+	    	setPosition(pos[0] + newPos[0], pos[1] + newPos[1], pos[2] + newPos[2]);
 	    }
 
 	    public void setBackground(float[] background) {
@@ -29,47 +41,51 @@ public class Camera extends GameObject {
 	    	gl.glClearColor(myBackground[0], myBackground[1],
 	    				    myBackground[2], myBackground[3]);
 	    	gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-	    	gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+	    	
+	    	gl.glMatrixMode(GL2.GL_MODELVIEW);
 	    	gl.glLoadIdentity();
-	        gl.glRotated(-getGlobalRotation()[0],1,0,0); //rotate about x
-	        gl.glRotated(-getGlobalRotation()[1],0,1,0); //rotate about y
-	        gl.glRotated(-getGlobalRotation()[2],0,0,1); //rotate about z
-	        gl.glScaled(1/getGlobalScale(), 1/getGlobalScale(), 1/getGlobalScale());
-	        gl.glTranslated(-getGlobalPosition()[0],-getGlobalPosition()[1], -getGlobalPosition()[2]);
-	        
+	    	GLU myGLU = new GLU();
+	    	double x,y,z;
+	    	x = getGlobalPosition()[0];
+	    	y = getGlobalPosition()[1];
+			z = getGlobalPosition()[2];
+			double[] centre = MathUtil.multiply(MathUtil.rotationMatrix(getRotation()), new double[]{0,0,-1,0});
+
+			myGLU.gluLookAt(
+	    					x, // x
+	    					y, // y
+    						z, // z
+//	    			2,2,2,
+    						x + centre[0],
+    						y + centre[1],
+    						z + centre[2],	// k vector (z-axis)
+//	    			0,0,0,
+	    			0,1,0); // up vector
+			
 	    }
 
 	    public void reshape(GL2 gl, int x, int y, int width, int height) {
 	        
+	        double aspect;
+	        if (width > height) {
+	            aspect = (1.0 * width) / height;
+	        }
+	        else {
+	            aspect = (1.0 * height) / width;
+	        }
+
 	        // match the projection aspect ratio to the viewport
 	        // to avoid stretching
 	        gl.glMatrixMode(GL2.GL_PROJECTION);
+	    	gl.glLoadIdentity();
 
-	        double top, bottom, left, right;
-	        
-	        if (width > height) {
-	            double aspect = (1.0 * width) / height;
-	            top = 1.0;
-	            bottom = -1.0;
-	            left = -aspect;
-	            right = aspect;            
-	        }
-	        else {
-	            double aspect = (1.0 * height) / width;
-	            top = aspect;
-	            bottom = -aspect;
-	            left = -1;
-	            right = 1;                        
-	        }        
 	        GLU myGLU = new GLU();
-	        // coordinate system (left, right, bottom, top)
-	        myGLU.gluOrtho2D(left, right, bottom, top);   
-//	        myGLU.gluLookAt(3, 3, 3, 0.01, 0.01, 0.01, 0, 1, 0);
+	    	myGLU.gluPerspective(60, aspect, 0.1, 40);
 	    }
 
 	    @Override
 		public void update(double dt) {
-//	    	this.rotate(new double[]{dt*50,dt*50,dt*50});
+//	    	this.rotate(new double[]{0,dt*50,0});
 //	    	this.translate(dt*0.01, dt*0.01, dt*0.01);
 	    }
 }

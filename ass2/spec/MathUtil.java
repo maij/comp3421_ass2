@@ -134,9 +134,9 @@ public class MathUtil {
 	        thetaY = 0;
         }
         */
-    	thetaZ = Math.atan2(-m[0][1], m[0][0]);
-    	thetaX = Math.atan2(-m[1][2], m[2][2]);
-    	thetaY = Math.atan2(-m[0][2], m[0][0]/Math.cos(thetaZ));
+    	thetaX = Math.atan2(m[2][1], m[2][2]);
+    	thetaY = Math.atan2(-m[2][0], Math.sqrt(m[2][1]*m[2][1] + m[2][2]*m[2][2]));
+    	thetaZ = Math.atan2(m[1][0], m[0][0]);
     	return normaliseAngleArray(new double[]{thetaX*180/Math.PI,
     											thetaY*180/Math.PI,
     											thetaZ*180/Math.PI});
@@ -165,7 +165,7 @@ public class MathUtil {
     	double radx = Math.PI/180*angle[0];
     	double rady = Math.PI/180*angle[1];
     	double radz = Math.PI/180*angle[2];
-    	// TODO: Make these the correct 4x4 matrices
+
     	double[][] mx = new double[][]{{1, 0		     ,	0			  , 0},
             						   {0, Math.cos(radx), -Math.sin(radx), 0},
 					   				   {0, Math.sin(radx),  Math.cos(radx), 0},
