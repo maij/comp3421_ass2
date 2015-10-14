@@ -69,9 +69,9 @@ public class Mesh {
 					z = vertices.get(v_index)[2];
 					gl.glVertex3d(x, y, z);
 	
-					System.out.printf("%d\n", v_index);
+//					System.out.printf("%d\n", v_index);
 				}
-				System.out.println();
+//				System.out.println();
 			} 
 			gl.glEnd();
 		}

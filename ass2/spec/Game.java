@@ -1,6 +1,5 @@
 package ass2.spec;
 
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -26,6 +25,7 @@ import com.jogamp.opengl.util.FPSAnimator;
  * @author malcolmr
  */
 public class Game extends JFrame implements GLEventListener{
+	private static final long serialVersionUID = 1L;
 	private Terrain myTerrain;
     private static Camera myCamera;
     private long myTime;
@@ -50,6 +50,7 @@ public class Game extends JFrame implements GLEventListener{
 
           TerrainGameObject terrain = new TerrainGameObject(GameObject.ROOT);
           terrain.setTerrain(myTerrain);
+          terrain.generateMesh(myTerrain);
           drawWorldObjects();
           drawTrees(myTerrain.trees());
           
@@ -162,8 +163,10 @@ public class Game extends JFrame implements GLEventListener{
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		myTime = System.currentTimeMillis();
-		gl.glEnable(GL2.GL_DEPTH_TEST | GL2.GL_CULL_FACE);
+		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glCullFace(GL2.GL_BACK);
+		gl.glEnable(GL2.GL_LIGHTING);
+		gl.glEnable(GL2.GL_LIGHT0);
 	}
 
 	@Override
