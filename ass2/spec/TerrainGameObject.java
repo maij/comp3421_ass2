@@ -7,13 +7,14 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLProfile;
 
-import com.jogamp.opengl.util.texture.Texture;
+//import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 
 public class TerrainGameObject extends GameObject {
-	private Terrain myTerrain;
-	private Mesh myMesh;
+	private Terrain myTerrain = null;
+	private Mesh myMesh = null;
+	
 	public TerrainGameObject(GameObject parent) {
 		super(parent);
 	}
@@ -53,32 +54,32 @@ public class TerrainGameObject extends GameObject {
 	@Override 
 	public void draw(GL2 gl){
 		if (myTerrain == null) {
-			System.out.println("ERR: Terrain not set");
+			System.err.println("Terrain not set");
 			return;
 		}
 
-        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
         // Transform the object before drawing it
         gl.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
 		gl.glRotated(getRotation()[0], 1, 0, 0);
 		gl.glRotated(getRotation()[1], 0, 1, 0);
 		gl.glRotated(getRotation()[2], 0, 0, 1);
 		gl.glScaled(getScale(), getScale(), getScale());
-		gl.glLightModelfv(
-				GL2.GL_LIGHT_MODEL_AMBIENT, myTerrain.getSunlight(), 0);
-        
-//		GLProfile glp = GLProfile.getDefault();
-//		TextureData texture= null;
-//		String filename = "./textures/grass_texture.png";
-//		try {
-//			texture = TextureIO.newTextureData(glp,new File(filename),true, "png");
-//		} catch (IOException exc) {
-//			System.err.println(filename);
-//            exc.printStackTrace();
-//            System.exit(1);
-//		}
-//		
-		myMesh.draw(gl, null);
+		
+		// Taken from TextureExample1
+		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
+		float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    	gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_BORDER); 
+    	gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, color,0);
+    	gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE); 
+    	gl.glLightModelfv(
+ 				GL2.GL_LIGHT_MODEL_AMBIENT, myTerrain.getSunlight(), 0);
+         
+//		gl.glBindTexture(GL2.GL_TEXTURE_2D, super.getTextureID());  
+		myMesh.draw(gl);
+//		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+		
+//		gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 		
 	}
 

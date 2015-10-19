@@ -59,9 +59,9 @@ public class Camera extends GameObject {
     						x + centre[0],
     						y + centre[1],
     						z + centre[2],	// k vector (z-axis)
-//	    			0,0,0,
-	    			0,1,0); // up vector
-			
+	    			0,1,0);
+//					Math.cos(getRotation()[2]*Math.PI/180), Math.sin(getRotation()[2]*Math.PI/180), 0); // up vector
+			// x = cos(z_rot), y = sin(z_rot)
 	    }
 
 	    public void reshape(GL2 gl, int x, int y, int width, int height) {
@@ -80,12 +80,12 @@ public class Camera extends GameObject {
 	    	gl.glLoadIdentity();
 
 	        GLU myGLU = new GLU();
-	    	myGLU.gluPerspective(60, aspect, 0.1, 40);
+	    	myGLU.gluPerspective(40, aspect, 0.1, 40);
 	    }
 
 	    @Override
 		public void update(double dt) {
-//	    	this.rotate(new double[]{0,dt*50,0});
+	    	this.rotate(new double[]{dt*0,dt*0,dt*75});
 //	    	this.translate(dt*0.01, dt*0.01, dt*0.01);
 	    }
 }

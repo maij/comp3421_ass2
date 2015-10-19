@@ -27,11 +27,15 @@ import com.jogamp.opengl.util.texture.TextureIO;
  *
  * @author malcolmr
  */
-public class Game extends JFrame implements GLEventListener{
+public class Game extends JFrame implements GLEventListener, KeyListener {
 	private static final long serialVersionUID = 1L;
 	private Terrain myTerrain;
     private static Camera myCamera;
     private long myTime;
+    private static final int NUM_TEXTURES = 2;
+    private Texture[] myTextures;
+    private TerrainGameObject terrain;
+    private CubeObject[] cubes;
     
     public Game(Terrain terrain) {
     	super("Assignment 2");
@@ -45,47 +49,31 @@ public class Game extends JFrame implements GLEventListener{
     /** 
      * Run the game.
      */
-    public void run() throws FileNotFoundException, IOException{
-    	  GLProfile glp = GLProfile.getDefault();
-          GLCapabilities caps = new GLCapabilities(glp);
-          GLJPanel panel = new GLJPanel(caps);
-          panel.addGLEventListener(this);
-          
-          TerrainGameObject terrain = new TerrainGameObject(GameObject.ROOT);
-          terrain.setTerrain(myTerrain);
-          terrain.generateMesh(myTerrain);
-          drawWorldObjects();
-          drawTrees(myTerrain.trees());
-          
-          
-          terrain.translate(5, 0, 5);
-          
-          myCamera = new Camera(GameObject.ROOT);
-          myCamera.translate(0, 0.5, 0);
-          myCamera.scale(2);
-          myCamera.setBackground(new float[]{1f,1f,1f,1f});
-          
-          panel.addKeyListener(
-    		  new KeyListener() {
-		  			@Override
-		  			public void keyPressed(KeyEvent e) {
-		  				int key = e.getKeyCode();
-		  				switch(key) {
-		  					case KeyEvent.VK_UP   : myCamera.translate(0, 0, -0.1); break;
-		  					case KeyEvent.VK_DOWN : myCamera.translate(0, 0, 0.1); break;
-		  					case KeyEvent.VK_LEFT : myCamera.rotate(new double[]{0,  5, 0}); break;
-		  					case KeyEvent.VK_RIGHT: myCamera.rotate(new double[]{0, -5, 0}); break;
-		  					case KeyEvent.VK_B	  : myCamera.scale(2); break;
-		  					case KeyEvent.VK_S	  : myCamera.scale(0.5); break;
-		  				}
-		  			}
-		  			@Override
-		  			public void keyReleased(KeyEvent e) {}
-		  			@Override
-		  			public void keyTyped(KeyEvent arg0) {}
-    		  }
-		  );
-          
+    public void run() {
+		  GLProfile glp = GLProfile.getDefault();
+		  GLCapabilities caps = new GLCapabilities(glp);
+		  GLJPanel panel = new GLJPanel(caps);
+		  panel.addGLEventListener(this);
+		  
+		  terrain = new TerrainGameObject(GameObject.ROOT);
+		  terrain.setTerrain(myTerrain);
+		  terrain.generateMesh(myTerrain);
+		          
+		  
+		  drawWorldObjects();
+		  drawTrees(myTerrain.trees());
+		  
+		  
+		  terrain.translate(5, 0, 5);
+		  
+		  myCamera = new Camera(GameObject.ROOT);
+		  myCamera.translate(0, 0.5, 0);
+		  myCamera.scale(2);
+		  myCamera.setBackground(new float[]{1f,1f,1f,1f});
+
+		  // Add the keyListener
+		  panel.addKeyListener(this);
+		  
           // Add an animator to call 'display' at 60fps        
           FPSAnimator animator = new FPSAnimator(60);
           animator.add(panel);
@@ -106,21 +94,19 @@ public class Game extends JFrame implements GLEventListener{
     public static void main(String[] args) throws FileNotFoundException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         Game game = new Game(terrain);
-        try {
-        	game.run();
-        }
-        catch (Exception e) {}
+    	game.run();
     }
     
     public void drawWorldObjects() {
-    	GameObject cubeFront = new CubeObject(GameObject.ROOT);
-        GameObject cubeBack = new CubeObject(GameObject.ROOT);
-        GameObject cubeLeft = new CubeObject(GameObject.ROOT);
-        GameObject cubeRight = new CubeObject(GameObject.ROOT);
+    	CubeObject cubeFront = new CubeObject(GameObject.ROOT);
+    	CubeObject cubeBack = new CubeObject(GameObject.ROOT);
+    	CubeObject cubeLeft = new CubeObject(GameObject.ROOT);
+    	CubeObject cubeRight = new CubeObject(GameObject.ROOT);
         cubeFront.translate(0, 0, -3);
         cubeBack.translate(0, 0, 3);
         cubeLeft.translate(-3, 0, 0);
         cubeRight.translate(3, 0, 0);
+        cubes = new CubeObject[]{cubeFront, cubeBack, cubeLeft, cubeRight};
         GameObject axes = new Axes(GameObject.ROOT);
         axes.scale(2);
     }
@@ -149,11 +135,16 @@ public class Game extends JFrame implements GLEventListener{
 	public void display(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
         myCamera.setView(gl);
-        
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
         gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
+        gl.glLightModelfv(
+				GL2.GL_LIGHT_MODEL_AMBIENT, myTerrain.getSunlight(), 0);
         update();
-        
+        // Add textures to objects
+        terrain.setTexture(myTextures[0]);
+        for (CubeObject c: cubes) {
+        	c.setTexture(myTextures[1]);
+        }
         GameObject.ROOT.draw(gl);
 	}
 
@@ -167,15 +158,13 @@ public class Game extends JFrame implements GLEventListener{
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		myTime = System.currentTimeMillis();
-		gl.glEnable(GL2.GL_DEPTH_TEST | GL2.GL_TEXTURE_2D);
-		gl.glTexEnvf(GL2.GL_TEXTURE_ENV,
-				GL2.GL_TEXTURE_ENV_MODE,
-				GL2.GL_MODULATE);
+		gl.glEnable(GL2.GL_DEPTH_TEST | GL.GL_CULL_FACE);
 
-		int nTex = 1;
-		int[] textures = new int[nTex];
-		//get texture id – release when finished
-		gl.glGenTextures(nTex, textures, 0);
+		myTextures = new Texture[NUM_TEXTURES];
+		String filename = "./textures/grass_texture.png";
+		myTextures[0] = new Texture(gl, filename, "png", false);
+		filename = "./textures/grass.png";
+		myTextures[1] = new Texture(gl, filename, "png", false);
 		
 		gl.glCullFace(GL2.GL_BACK);
 		gl.glEnable(GL2.GL_LIGHTING);
@@ -187,5 +176,32 @@ public class Game extends JFrame implements GLEventListener{
 			int height) {
 		GL2 gl = drawable.getGL().getGL2();
 		myCamera.reshape(gl, x, y, width, height);
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		switch(key) {
+			case KeyEvent.VK_UP   : myCamera.translate(0, 0, -0.1); break;
+			case KeyEvent.VK_DOWN : myCamera.translate(0, 0, 0.1); break;
+			case KeyEvent.VK_LEFT : myCamera.rotate(new double[]{0,  5, 0}); break;
+			case KeyEvent.VK_RIGHT: myCamera.rotate(new double[]{0, -5, 0}); break;
+			case KeyEvent.VK_B	  : myCamera.scale(2); break;
+			case KeyEvent.VK_S	  : myCamera.scale(0.5); break;
+
+//			case KeyEvent.VK_SPACE: swap_texture = !swap_texture; break;
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

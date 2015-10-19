@@ -33,6 +33,7 @@ public class GameObject {
     private double myScale;
     private double[] myTranslation;
     
+    private Texture myTexture = null;
     // is this part of the tree showing?
     private boolean amShowing;
 
@@ -135,7 +136,7 @@ public class GameObject {
     	myRotation[0] += angle[0];
     	myRotation[1] += angle[1];
     	myRotation[2] += angle[2];
-//        myRotation = MathUtil.normaliseAngle(myRotation);
+        myRotation = MathUtil.normaliseAngleArray(myRotation);
     }
 
     /**
@@ -235,15 +236,7 @@ public class GameObject {
      * @param gl
      */
     public void drawSelf(GL2 gl) {
-        gl.glBegin(GL2.GL_QUADS);
-        {	
-        	gl.glColor4f(0,0,0,1);
-        	gl.glVertex3d(-100, 0, -100);
-        	gl.glVertex3d( 100, 0, -100);
-        	gl.glVertex3d( 100, 0,  100);
-        	gl.glVertex3d( 100, 0, -100);
-        }
-        gl.glEnd();
+        
     }
 
     /**
@@ -400,5 +393,13 @@ public class GameObject {
         this.setRotation(MathUtil.decompose_rotation(m));
         // modulus of the i vector
         this.setScale(Math.sqrt(m[0][0]*m[0][0] + m[1][0]*m[1][0] + m[2][0]*m[2][0]));
+    }
+    
+    public void setTexture(Texture t) {
+		myTexture = t;
+	}
+    
+    public int getTextureID() {
+    	return myTexture == null ? 0 : myTexture.getTextureId();
     }
 }

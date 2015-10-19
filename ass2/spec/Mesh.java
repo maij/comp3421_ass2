@@ -15,8 +15,6 @@ public class Mesh {
 	private ArrayList<int[]> face_verts;
 	private ArrayList<Integer> face_norms;
 	
-	private int[] textureID = new int[1];
-	
 	public Mesh() {
 		vertices = new ArrayList<double[]>();
 		normals  = new ArrayList<double[]>();
@@ -53,60 +51,10 @@ public class Mesh {
 		face_norms.add(norm_index);
 	}
 	
-	public void draw (GL2 gl, TextureData data) {
-		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
+	public void draw (GL2 gl) {
 		if (face_verts.size() != face_norms.size()) {
 			System.err.println("Number of faces does not match number of normals");
 			return;
-		}
-		if (data != null) {
-			gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-
-			gl.glGenTextures(1, textureID, 0);
-			//The first time bind is called with the given id,
-			//an openGL texture object is created and bound to the id
-			//It also makes it the current texture.
-			gl.glBindTexture(GL.GL_TEXTURE_2D, textureID[0]);
-
-			 // Build texture initialised with image data.
-	        gl.glTexImage2D(GL.GL_TEXTURE_2D, 0,
-	        				data.getInternalFormat(),
-	        				data.getWidth(),
-	        				data.getHeight(),
-	        				0,
-	        				data.getPixelFormat(),
-	        				data.getPixelType(),
-	        				data.getBuffer());
-			// Mipmap stuff
-	        // Set texture parameters to enable automatic mipmap generation and bilinear/trilinear filtering
-//    		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-//    		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
-    		//float fLargest[] = new float[1];
-
-    		//gl.glGetFloatv(GL.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, fLargest,0);
-    		//System.out.println(fLargest[0]);
-    		//gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest[0]);
-//    		gl.glGenerateMipmap(GL2.GL_TEXTURE_2D); 		    
-
-//			gl.glTexImage2D(
-//					GL2.GL_TEXTURE_2D,
-//					0,// level of detail: 0 = base
-//					data.getInternalFormat(),
-//					data.getWidth(),
-//					data.getHeight(),
-//					0, // border (must be 0)
-//					data.getPixelFormat(),
-//					data.getPixelType(),
-//					data.getBuffer());
-//			texture.enable(gl);
-//			texture.bind(gl);
-//			texture.enable(arg0);
-//			gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
-//			gl.glTexParameteri(
-//					GL2.GL_TEXTURE_2D,
-//					GL2.GL_TEXTURE_MIN_FILTER,
-//					GL2.GL_NEAREST_MIPMAP_NEAREST);
-//			gl.glBindTexture(GL2.GL_TEXTURE_2D,0);
 		}
 		// Draw each face as a separate polygon
 		for (int i = 0; i < face_verts.size(); i++) {
@@ -117,6 +65,7 @@ public class Mesh {
 				ny = normals.get(face_norms.get(i))[1];
 				nz = normals.get(face_norms.get(i))[2];
 				gl.glNormal3d(nx, ny, nz);
+//				gl.glTexCoord2d(1/face_verts.size(), 1/face_verts.size());
 				for (int v_index : face_verts.get(i)) {
 					double x, y, z;
 					x = vertices.get(v_index)[0];
@@ -127,6 +76,5 @@ public class Mesh {
 			} 
 			gl.glEnd();
 		}
-		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 	}
 }
