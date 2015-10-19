@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLJPanel;
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.TextureIO;
 
 
 
@@ -42,12 +45,12 @@ public class Game extends JFrame implements GLEventListener{
     /** 
      * Run the game.
      */
-    public void run() {
+    public void run() throws FileNotFoundException, IOException{
     	  GLProfile glp = GLProfile.getDefault();
           GLCapabilities caps = new GLCapabilities(glp);
           GLJPanel panel = new GLJPanel(caps);
           panel.addGLEventListener(this);
-
+          
           TerrainGameObject terrain = new TerrainGameObject(GameObject.ROOT);
           terrain.setTerrain(myTerrain);
           terrain.generateMesh(myTerrain);
@@ -103,9 +106,10 @@ public class Game extends JFrame implements GLEventListener{
     public static void main(String[] args) throws FileNotFoundException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         Game game = new Game(terrain);
-        
-        
-        game.run();
+        try {
+        	game.run();
+        }
+        catch (Exception e) {}
     }
     
     public void drawWorldObjects() {
@@ -163,7 +167,16 @@ public class Game extends JFrame implements GLEventListener{
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		myTime = System.currentTimeMillis();
-		gl.glEnable(GL2.GL_DEPTH_TEST);
+		gl.glEnable(GL2.GL_DEPTH_TEST | GL2.GL_TEXTURE_2D);
+		gl.glTexEnvf(GL2.GL_TEXTURE_ENV,
+				GL2.GL_TEXTURE_ENV_MODE,
+				GL2.GL_MODULATE);
+
+		int nTex = 1;
+		int[] textures = new int[nTex];
+		//get texture id – release when finished
+		gl.glGenTextures(nTex, textures, 0);
+		
 		gl.glCullFace(GL2.GL_BACK);
 		gl.glEnable(GL2.GL_LIGHTING);
 		gl.glEnable(GL2.GL_LIGHT0);

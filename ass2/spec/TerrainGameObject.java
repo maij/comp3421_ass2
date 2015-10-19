@@ -1,6 +1,15 @@
 package ass2.spec;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GLProfile;
+
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.TextureIO;
 
 public class TerrainGameObject extends GameObject {
 	private Terrain myTerrain;
@@ -42,20 +51,34 @@ public class TerrainGameObject extends GameObject {
 	}
 	
 	@Override 
-	public void draw(GL2 gl) {
+	public void draw(GL2 gl){
 		if (myTerrain == null) {
 			System.out.println("ERR: Terrain not set");
 			return;
 		}
 
-        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
         // Transform the object before drawing it
         gl.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
 		gl.glRotated(getRotation()[0], 1, 0, 0);
 		gl.glRotated(getRotation()[1], 0, 1, 0);
 		gl.glRotated(getRotation()[2], 0, 0, 1);
 		gl.glScaled(getScale(), getScale(), getScale());
-		myMesh.draw(gl);
+		gl.glLightModelfv(
+				GL2.GL_LIGHT_MODEL_AMBIENT, myTerrain.getSunlight(), 0);
+        
+//		GLProfile glp = GLProfile.getDefault();
+//		TextureData texture= null;
+//		String filename = "./textures/grass_texture.png";
+//		try {
+//			texture = TextureIO.newTextureData(glp,new File(filename),true, "png");
+//		} catch (IOException exc) {
+//			System.err.println(filename);
+//            exc.printStackTrace();
+//            System.exit(1);
+//		}
+//		
+		myMesh.draw(gl, null);
 		
 	}
 
