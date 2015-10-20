@@ -61,7 +61,7 @@ public class Mesh {
 				ny = normals.get(face_norms.get(i))[1];
 				nz = normals.get(face_norms.get(i))[2];
 				gl.glNormal3d(nx, ny, nz);
-				gl.glTexCoord2d(1/face_verts.size(), 1/face_verts.size());
+//				gl.glTexCoord2d(1/face_verts.size(), 1/face_verts.size());
 				for (int v_index : face_verts.get(i)) {
 					double x, y, z;
 					x = vertices.get(v_index)[0];

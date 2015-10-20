@@ -120,7 +120,43 @@ public class Terrain {
      */
     public double altitude(double x, double z) {
         double altitude = 0;
-
+        double x_prop = x - (long)x;
+        double z_prop = z - (long)z;
+        int x_hi, x_lo, z_hi, z_lo;
+        
+        //  (x_hi,y_hl,z_lo)  (x_hi,y_hh,z_hi)   
+        // 	          	+-----+  
+        //     		  	|    /|  
+        //        	  	|  /  |
+        //      	  	|/    |
+        //  	      	+-----+
+        //  (x_lo,y_ll,z_lo)  (x_hi,y_lh,z_h)
+        
+        x_hi = (int) (x+1);
+        z_hi = (int) (z+1);
+        x_lo = (int) (x);
+        z_lo = (int) (z);
+        System.out.printf("%d %d %d %d\n", x_hi, z_hi, x_lo, z_lo);
+        double y_ll = 0, y_lh = 0, y_hl = 0, y_hh = 0;
+        
+        // If z_hi or x_hi are out of bounds, then the altitude is 0 (initialized above)
+        y_ll = getGridAltitude(x_lo,z_lo);
+        if (z_hi < size().getHeight())
+        	y_lh = getGridAltitude(x_lo,z_hi);
+        if (x_hi < size().getWidth())
+        	y_hl = getGridAltitude(x_hi,z_lo);
+        if (x_hi < size().getWidth() && z_hi < size().getHeight())
+        y_hh = getGridAltitude(x_hi,z_hi);
+        
+        // Low and high altitudes wrt the z axis
+        // Bilinearly interpolating, first with x.
+        double y_lo, y_hi;
+        y_lo = x_prop*y_hl + (1-x_prop)*y_ll;
+        y_hi = x_prop*y_hh + (1-x_prop)*y_lh;
+        // Now interpolate along z
+        altitude = z_prop*y_hi + (1-z_prop)*y_lo;
+//        System.out.printf("x  = %f z  = %f\n", x_prop, z_prop);
+//        System.out.printf("xp = %f zp = %f\n", x_prop, z_prop);
         
         return altitude;
     }

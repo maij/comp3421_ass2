@@ -35,8 +35,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private Texture[] myTextures;
     private TerrainGameObject terrain;
     private CubeObject[] cubes = new CubeObject[]{};
-    private TreeObject[] trees = new TreeObject[]{};
+    private TreeObject[] myTrees = new TreeObject[]{};
     private SphereObject[] spheres = new SphereObject[]{};
+    
+    
+    private static final double trunkRadius = 0.3;
+    private static final double trunkHeight = 3;
     
     public Game(Terrain terrain) {
     	super("Assignment 2");
@@ -61,15 +65,16 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		  terrain.generateMesh(myTerrain);
 		          
 		  
-		  drawWorldObjects();
+//		  drawWorldObjects();
 		  drawTrees(myTerrain.trees());
 		  
 		  
-		  terrain.translate(5, 0, 5);
+//		  terrain.translate(5, 0, 5);
 		  
 		  myCamera = new Camera(GameObject.ROOT);
 		  myCamera.translate(0, 0.5, 0);
 		  myCamera.scale(2);
+		  myCamera.rotate(new double[]{0,-90,0});	//face in the +x direction
 		  myCamera.setBackground(new float[]{1f,1f,1f,1f});
 
 		  // Add the keyListener
@@ -81,7 +86,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
           animator.start();
 
           getContentPane().add(panel);
-          setSize(800, 600);        
+          setSize(1920, 1080);        
           setVisible(true);
           setDefaultCloseOperation(EXIT_ON_CLOSE);        
     }
@@ -117,13 +122,17 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //        spheres = new SphereObject[]{sphere};
     }
         
-    public void drawTrees(List<Tree> t) {
-    	trees = new TreeObject[1];
-    	
-    	TreeObject tree = new TreeObject(GameObject.ROOT, 0.3, 2);
-    	tree.translate(-2,0,-2);
-//    	tree.scale(2);
-    	trees[0] = tree;
+    public void drawTrees(List<Tree> trees) {
+    	myTrees = new TreeObject[trees.size()];
+    	for (int i = 0; i < trees.size(); i++) {
+    		myTrees[i] = new TreeObject(GameObject.ROOT,trunkRadius,trunkHeight);
+    		double[] pos = trees.get(i).getPosition();
+    		
+    		myTrees[i].translate(trees.get(i).getPosition()[0],
+			    				 trees.get(i).getPosition()[1],
+			    				 trees.get(i).getPosition()[2]);
+    		
+    	}
     }
     
     private void update() {
@@ -154,7 +163,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         for (CubeObject c: cubes) {
         	c.setTexture(myTextures[1]);
         }
-        for (TreeObject t: trees) {
+        for (TreeObject t: myTrees) {
         	t.setBushTexture(myTextures[3]);
         	t.setTrunkTexture(myTextures[2]);
         }
@@ -240,8 +249,21 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			case KeyEvent.VK_RIGHT: myCamera.rotate(new double[]{0, -5, 0}); break;
 			case KeyEvent.VK_B	  : myCamera.scale(2); break;
 			case KeyEvent.VK_S	  : myCamera.scale(0.5); break;
-
+			// Translate up the hill
 //			case KeyEvent.VK_SPACE: swap_texture = !swap_texture; break;
+		}
+		double xdim, zdim;
+		double[] my_pos = myCamera.getGlobalPosition();
+		double[] t_pos = terrain.getGlobalPosition();
+		xdim = myTerrain.size().getWidth();
+		zdim = myTerrain.size().getHeight();
+		// Am I in the terrain?
+		System.out.println(my_pos[1]);
+		System.out.printf("mpx = %f, mpz = %f, tpx = %f, tpz = %f\n", my_pos[0], my_pos[2], t_pos[0], t_pos[2]);
+		if ((my_pos[0] > t_pos[0] && my_pos[0] < t_pos[0] + xdim) &&
+			(my_pos[2] > t_pos[2] && my_pos[2] < t_pos[2] + zdim)) {
+			System.out.println(myTerrain.altitude(my_pos[0], my_pos[2]));
+			myCamera.setPosition(my_pos[0], myTerrain.altitude(my_pos[0], my_pos[2]), my_pos[2]);
 		}
 	}
 
