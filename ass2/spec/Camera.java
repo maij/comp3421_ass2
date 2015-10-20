@@ -85,7 +85,7 @@ public class Camera extends GameObject {
 
 	    @Override
 		public void update(double dt) {
-	    	this.rotate(new double[]{dt*0,dt*0,dt*75});
-//	    	this.translate(dt*0.01, dt*0.01, dt*0.01);
+//	    	this.rotate(new double[]{dt*20,dt*0,dt*0});
+//	    	this.translate(0, 1*dt, 0);
 	    }
 }

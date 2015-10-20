@@ -137,11 +137,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         myCamera.setView(gl);
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
         gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
-        gl.glLightModelfv(
-				GL2.GL_LIGHT_MODEL_AMBIENT, myTerrain.getSunlight(), 0);
         update();
         // Add textures to objects
-        terrain.setTexture(myTextures[0]);
+        terrain.setTexture(myTextures[1]);
         for (CubeObject c: cubes) {
         	c.setTexture(myTextures[1]);
         }
@@ -158,17 +156,44 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		myTime = System.currentTimeMillis();
-		gl.glEnable(GL2.GL_DEPTH_TEST | GL.GL_CULL_FACE);
-
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		gl.glFrontFace( GL2.GL_CCW);
 		myTextures = new Texture[NUM_TEXTURES];
 		String filename = "./textures/grass_texture.png";
 		myTextures[0] = new Texture(gl, filename, "png", false);
 		filename = "./textures/grass.png";
 		myTextures[1] = new Texture(gl, filename, "png", false);
-		
+		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
 		gl.glEnable(GL2.GL_LIGHTING);
+		float[] sunDir = new float[]{myTerrain.getSunlight()[0], myTerrain.getSunlight()[1], myTerrain.getSunlight()[2], 0};
+		gl.glLightfv(GL2.GL_LIGHT0,GL2.GL_POSITION , sunDir, 0);
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0);
+        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0);
+        
 		gl.glEnable(GL2.GL_LIGHT0);
+		
+    	// Material property vectors.
+
+    	float matAmbAndDif2[] = {0.0f, 0.9f, 0.0f, 1.0f};
+    	float matSpec[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    	float matShine[] = { 50.0f };
+//
+//    	// Material property vectors.
+    	float matAmbAndDif1[] = {1.0f, 1.0f, 1.0f, 1.0f};
+//
+//    	// Material properties.
+    	gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, matAmbAndDif1,0);
+    	gl.glMaterialfv(GL2.GL_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, matAmbAndDif2,0);
+    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, matSpec,0);
+    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SHININESS, matShine,0);
+//
+//    	// Specify how texture values combine with current surface color values.
+    	gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE); 
+
+    	// Turn on OpenGL texturing.
+    	gl.glEnable(GL2.GL_TEXTURE_2D);
+		
 	}
 
 	@Override

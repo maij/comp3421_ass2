@@ -58,7 +58,7 @@ public class TerrainGameObject extends GameObject {
 			return;
 		}
 
-        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
         // Transform the object before drawing it
         gl.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
 		gl.glRotated(getRotation()[0], 1, 0, 0);
@@ -67,19 +67,17 @@ public class TerrainGameObject extends GameObject {
 		gl.glScaled(getScale(), getScale(), getScale());
 		
 		// Taken from TextureExample1
-		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
-		float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-    	gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_BORDER); 
-    	gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, color,0);
-    	gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE); 
-    	gl.glLightModelfv(
- 				GL2.GL_LIGHT_MODEL_AMBIENT, myTerrain.getSunlight(), 0);
+//		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
+//		float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+//    	gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_BORDER); 
+//    	gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, color,0);
+//    	gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE); 
          
-//		gl.glBindTexture(GL2.GL_TEXTURE_2D, super.getTextureID());  
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, super.getTextureID());  
+
 		myMesh.draw(gl);
-//		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 		
-//		gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 		
 	}
 
