@@ -35,7 +35,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private static final int NUM_TEXTURES = 2;
     private Texture[] myTextures;
     private TerrainGameObject terrain;
-    private CubeObject[] cubes;
+    private CubeObject[] cubes = new CubeObject[]{};
+    private TreeObject[] trees = new TreeObject[]{};
+    private SphereObject[] spheres = new SphereObject[]{};
     
     public Game(Terrain terrain) {
     	super("Assignment 2");
@@ -109,10 +111,20 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         cubes = new CubeObject[]{cubeFront, cubeBack, cubeLeft, cubeRight};
         GameObject axes = new Axes(GameObject.ROOT);
         axes.scale(2);
+        
+//        SphereObject sphere = new SphereObject(GameObject.ROOT);
+//        sphere.translate(0, 2, 0);
+//        sphere.scale(4);
+//        spheres = new SphereObject[]{sphere};
     }
         
     public void drawTrees(List<Tree> t) {
+    	trees = new TreeObject[1];
     	
+    	TreeObject tree = new TreeObject(GameObject.ROOT);
+    	tree.translate(0,2,10);
+    	tree.scale(2);
+    	trees[0] = tree;
     }
     
     private void update() {
@@ -143,6 +155,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         for (CubeObject c: cubes) {
         	c.setTexture(myTextures[1]);
         }
+        for (TreeObject t: trees) {
+        	t.setBushTexture(myTextures[1]);
+        }
+        for (SphereObject s: spheres) {
+        	s.generateBuffers(gl);
+        	s.setTexture(myTextures[0]);
+        }
         GameObject.ROOT.draw(gl);
 	}
 
@@ -166,8 +185,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
 		gl.glEnable(GL2.GL_LIGHTING);
+		// Specified as a direction
 		float[] sunDir = new float[]{myTerrain.getSunlight()[0], myTerrain.getSunlight()[1], myTerrain.getSunlight()[2], 0};
-		gl.glLightfv(GL2.GL_LIGHT0,GL2.GL_POSITION , sunDir, 0);
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION , sunDir, 0);
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0);
         

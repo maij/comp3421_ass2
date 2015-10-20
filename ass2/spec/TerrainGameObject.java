@@ -67,12 +67,6 @@ public class TerrainGameObject extends GameObject {
 		gl.glScaled(getScale(), getScale(), getScale());
 		
 		// Taken from TextureExample1
-//		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
-//		float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-//    	gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_BORDER); 
-//    	gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, color,0);
-//    	gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE); 
-         
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, super.getTextureID());  
 
 		myMesh.draw(gl);
