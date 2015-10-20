@@ -10,12 +10,14 @@ public class Mesh {
 	private ArrayList<double[]> normals;
 	private ArrayList<int[]> face_verts;
 	private ArrayList<Integer> face_norms;
+	private ArrayList<double[]> uv_map;
 	
 	public Mesh() {
-		vertices = new ArrayList<double[]>();
-		normals  = new ArrayList<double[]>();
+		vertices   = new ArrayList<double[]>();
+		normals    = new ArrayList<double[]>();
 		face_verts = new ArrayList<int[]>();
-		face_norms= new ArrayList<Integer>();
+		face_norms = new ArrayList<Integer>();
+		uv_map     = new ArrayList<double[]>();
 	}
 	
 	public void setVertices(List<double[]> l) {
@@ -36,6 +38,10 @@ public class Mesh {
 	
 	public void addVertex(double[] v) {
 		vertices.add(v);
+	}
+	
+	public void addUVCoord(double[] uv) {
+		uv_map.add(uv);
 	}
 	
 	public void addNormal(double[] n) {
@@ -61,9 +67,13 @@ public class Mesh {
 				ny = normals.get(face_norms.get(i))[1];
 				nz = normals.get(face_norms.get(i))[2];
 				gl.glNormal3d(nx, ny, nz);
-				gl.glTexCoord2d(1/face_verts.size(), 1/face_verts.size());
 				for (int v_index : face_verts.get(i)) {
 					double x, y, z;
+
+//					gl.glTexCoord2d(1/face_verts.size(), 1/face_verts.size());
+					double[] uv = uv_map.get(v_index);
+					gl.glTexCoord2d(uv[0], uv[1]);
+					
 					x = vertices.get(v_index)[0];
 					y = vertices.get(v_index)[1];
 					z = vertices.get(v_index)[2];

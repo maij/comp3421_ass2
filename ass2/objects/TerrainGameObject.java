@@ -28,6 +28,7 @@ public class TerrainGameObject extends GameObject {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				m.addVertex(new double[]{i, t.getGridAltitude(i, j), j});
+				m.addUVCoord(new double[]{i,j});
 			}
 		}
 		
