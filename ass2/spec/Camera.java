@@ -8,12 +8,56 @@ import ass2.objects.GameObject;
 public class Camera extends GameObject {
 	
 	 	private float[] myBackground;
+	 	
+	 	private double transSpeed = 1;
+	 	private static final double transBaseSpeed = 0.1;
+	 	private double rotSpeed = 1;
+	 	private static final double rotBaseSpeed = 1;
+	    
+	 	private int transDir = 1;
+	 	private int rotDir = 1;
+	 	
+	    private boolean isMoving;
+	    private boolean isTurning;
+	    
 	    
 	    public Camera(GameObject parent) {
 	        super(parent);
 
 	        myBackground = new float[]{1,1,1,1}; // Default to white background
 	        // Note: Replace this by parent's matrix
+	    }
+	    
+	    public void setTransDirection(int dir) {
+	    	transDir = (int)(dir/Math.abs((double)dir));
+	    }
+
+	    public void setRotDirection(int dir) {
+	    	rotDir = (int)(dir/Math.abs((double)dir));
+	    }
+	    
+	    public void enableMovement() {
+	    	isMoving = true;
+	    }
+	    
+	    public void disableMovement() {
+	    	isMoving = false;
+	    }
+
+	    public void enableTurning() {
+	    	isTurning = true;
+	    }
+	    
+	    public void disableTurning() {
+	    	isTurning= false;
+	    }
+	    
+	    public void setTransSpeed(double s) {
+	    	transSpeed = s;
+	    }
+
+	    public void setRotSpeed(double r) {
+	    	rotSpeed = r;
 	    }
 
 	    public Camera() {
@@ -80,14 +124,15 @@ public class Camera extends GameObject {
 	        // to avoid stretching
 	        gl.glMatrixMode(GL2.GL_PROJECTION);
 	    	gl.glLoadIdentity();
-
 	        GLU myGLU = new GLU();
-	    	myGLU.gluPerspective(40, aspect, 0.1, 40);
+	    	myGLU.gluPerspective(40, aspect, 0.1, 160);
 	    }
 
 	    @Override
 		public void update(double dt) {
-//	    	this.rotate(new double[]{dt*20,dt*0,dt*0});
-//	    	this.translate(0, 1*dt, 0);
+	    	if (isMoving)
+	    		this.translate(0,0,transSpeed*transBaseSpeed*transDir);
+	    	if (isTurning)
+    			this.rotate(new double[]{0,rotSpeed*rotBaseSpeed*rotDir,0});
 	    }
 }

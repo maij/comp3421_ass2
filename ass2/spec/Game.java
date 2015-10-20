@@ -15,6 +15,8 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLJPanel;
 import javax.swing.JFrame;
+
+import com.jogamp.newt.event.InputEvent;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import ass2.objects.*;
@@ -38,7 +40,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private TreeObject[] myTrees = new TreeObject[]{};
     private SphereObject[] spheres = new SphereObject[]{};
     
-    private static final double myHeight 	= 0.5;
+    
+    private static final double myHeight 	= 1.2;
     private static final double trunkRadius = 0.3;
     private static final double trunkHeight = 3;
     
@@ -241,11 +244,18 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
+		double speed = 1;
+		if (e.getModifiers() == InputEvent.SHIFT_MASK) {
+			speed = 5;
+		}
+//		System.out.println(speed);
+		myCamera.setTransSpeed(speed);
+		myCamera.setRotSpeed(speed);
 		switch(key) {
-			case KeyEvent.VK_UP   : myCamera.translate(0, 0, -0.1); break;
-			case KeyEvent.VK_DOWN : myCamera.translate(0, 0, 0.1); break;
-			case KeyEvent.VK_LEFT : myCamera.rotate(new double[]{0,  5, 0}); break;
-			case KeyEvent.VK_RIGHT: myCamera.rotate(new double[]{0, -5, 0}); break;
+			case KeyEvent.VK_UP   : myCamera.enableMovement(); myCamera.setTransDirection(-1);	break;
+			case KeyEvent.VK_DOWN : myCamera.enableMovement(); myCamera.setTransDirection(1); break;
+			case KeyEvent.VK_LEFT :  myCamera.enableTurning(); myCamera.setRotDirection(1);	break;
+			case KeyEvent.VK_RIGHT:  myCamera.enableTurning(); myCamera.setRotDirection(-1); break;
 			case KeyEvent.VK_B	  : myCamera.scale(2); break;
 			case KeyEvent.VK_S	  : myCamera.scale(0.5); break;
 			// Translate up the hill
@@ -261,17 +271,30 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //		System.out.printf("mpx = %f, mpz = %f, tpx = %f, tpz = %f\n", my_pos[0], my_pos[2], t_pos[0], t_pos[2]);
 		if ((my_pos[0] > t_pos[0] && my_pos[0] < t_pos[0] + xdim) &&
 			(my_pos[2] > t_pos[2] && my_pos[2] < t_pos[2] + zdim)) {
-//			System.out.println(myTerrain.altitude(my_pos[0], my_pos[2]));
 			myCamera.setPosition(my_pos[0], myTerrain.altitude(my_pos[0], my_pos[2]) + myHeight, my_pos[2]);
 		} else {
 			myCamera.setPosition(my_pos[0], myHeight, my_pos[2]);
 		}
+		System.out.println(myCamera.getGlobalPosition()[1]);
+		
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
+	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+		int key = e.getKeyCode();
+		double speed = 1;
+		if (e.getModifiers() == InputEvent.SHIFT_MASK) {
+			speed = 5;
+		}
+		myCamera.setTransSpeed(speed);
+		myCamera.setRotSpeed(speed);
+		switch(key) {
+			case KeyEvent.VK_UP   : 
+			case KeyEvent.VK_DOWN : myCamera.disableMovement(); break;
+			case KeyEvent.VK_LEFT : 
+			case KeyEvent.VK_RIGHT: myCamera.disableTurning(); break;
+		}
 	}
 
 	@Override
