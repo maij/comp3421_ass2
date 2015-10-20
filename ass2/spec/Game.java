@@ -31,7 +31,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	private Terrain myTerrain;
     private static Camera myCamera;
     private long myTime;
-    private static final int NUM_TEXTURES = 2;
+    private static final int NUM_TEXTURES = 4;
     private Texture[] myTextures;
     private TerrainGameObject terrain;
     private CubeObject[] cubes = new CubeObject[]{};
@@ -155,11 +155,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         	c.setTexture(myTextures[1]);
         }
         for (TreeObject t: trees) {
-        	t.setBushTexture(myTextures[0]);
-        	t.setTrunkTexture(myTextures[1]);
+        	t.setBushTexture(myTextures[3]);
+        	t.setTrunkTexture(myTextures[2]);
         }
         for (SphereObject s: spheres) {
-        	s.generateBuffers(gl);
         	s.setTexture(myTextures[0]);
         }
 
@@ -183,6 +182,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		myTextures[0] = new Texture(gl, filename, "png", false);
 		filename = "./textures/grass.png";
 		myTextures[1] = new Texture(gl, filename, "png", false);
+		filename = "./textures/wood.png";
+		myTextures[2] = new Texture(gl, filename, "png", false);
+		filename = "./textures/branches.png";
+		myTextures[3] = new Texture(gl, filename, "png", false);
 		
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);

@@ -18,8 +18,6 @@ public class TreeObject extends GameObject {
 	// Does nothing, draw top and sphere
 	@Override
 	public void drawSelf(GL2 gl) {
-//		m.draw(gl);
-		top.generateBuffers(gl);
 	}
 	
 	public void setBushTexture(Texture t) {
