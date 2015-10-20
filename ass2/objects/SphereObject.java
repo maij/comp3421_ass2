@@ -1,5 +1,6 @@
-package ass2.spec;
+package ass2.objects;
 
+import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
@@ -11,14 +12,17 @@ public class SphereObject extends GameObject {
     private int maxVertices = maxStacks*(maxSlices+1)*2;
 	FloatBuffer verticesBuffer = FloatBuffer.allocate(maxVertices*3);
 	FloatBuffer normalsBuffer = FloatBuffer.allocate(maxVertices*3);
+	DoubleBuffer texBuffer = DoubleBuffer.allocate(maxVertices*4*2);
       
     private int numStacks = maxStacks;
     private int numSlices = maxSlices;
     private int bufferIds[] = new int[1];
+    private double radius = 1;
     
-	public SphereObject(GameObject parent) {
+	public SphereObject(GameObject parent, double radius) {
 		super(parent);
 		// TODO Auto-generated constructor stub
+		this.radius = radius;
 	} 
 	
 	double r(double t){
@@ -46,7 +50,11 @@ public class SphereObject extends GameObject {
     	gl.glNormalPointer(GL.GL_FLOAT, 0, maxVertices*3*Float.BYTES);
     	
     	gl.glBindTexture(GL2.GL_TEXTURE_2D, super.getTextureID());
-    	for(int i=0; i < numStacks; i++ ){
+//    	gl.glTexCoordPointer(4, GL2.GL_FLOAT, 0, texBuffer);
+		for(int i=0; i < numStacks; i++ ){
+//    		u = 0.5 + Math.atan2(2, 1)/2/Math.PI;
+//    		v = 0.5 - Math.asin(1)/Math.PI;
+//    		gl.glTexCoord2d(u, v);
     		gl.glDrawArrays(GL2.GL_TRIANGLE_STRIP,i*(maxSlices+1)*2,(numSlices+1)*2);        
     	}
 	}
@@ -58,7 +66,6 @@ public class SphereObject extends GameObject {
     	int ang;  
     	int delang = 360/maxSlices;
     	double x1,x2,z1,z2,y1,y2;
-    	double radius = 0.5;
     	for (int i = 0; i < maxStacks; i++) 
     	{ 
     		double t = -0.25 + i*deltaT;
@@ -69,7 +76,7 @@ public class SphereObject extends GameObject {
     			x1=radius * r(t)*Math.cos((double)ang*2.0*Math.PI/360.0); 
     			x2=radius * r(t+deltaT)*Math.cos((double)ang*2.0*Math.PI/360.0); 
     			y1 = radius * getY(t);
-
+    			
     			z1=radius * r(t)*Math.sin((double)ang*2.0*Math.PI/360.0);  
     			z2= radius * r(t+deltaT)*Math.sin((double)ang*2.0*Math.PI/360.0);  
     			y2 = radius * getY(t+deltaT);
@@ -103,11 +110,17 @@ public class SphereObject extends GameObject {
     			normalsBuffer.put((float)normal[0]);
     			normalsBuffer.put((float)normal[1]);
     			normalsBuffer.put((float)normal[2]);
+//    			System.out.println(i*maxSlices + j);
+//    			texBuffer.put(0);
+//    			texBuffer.put(0);
+//    			texBuffer.put(0);
+//    			texBuffer.put(1);
 
     		}; 
     	}
     	verticesBuffer.rewind();
     	normalsBuffer.rewind();
+    	texBuffer.rewind();
 }
     
     public void generateBuffers(GL2 gl){
@@ -128,6 +141,10 @@ public class SphereObject extends GameObject {
          gl.glBufferSubData(GL2.GL_ARRAY_BUFFER,
         		 maxVertices*3*Float.BYTES, 
         		 maxVertices*3*Float.BYTES,normalsBuffer);
+
+         gl.glBufferSubData(GL2.GL_ARRAY_BUFFER,
+        		 maxVertices*4*Float.BYTES, 
+        		 maxVertices*4*Float.BYTES,texBuffer);
     }
     
     private void normalize(double v[])  

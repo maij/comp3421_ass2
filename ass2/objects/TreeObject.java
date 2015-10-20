@@ -1,20 +1,19 @@
-package ass2.spec;
-import javax.media.opengl.GL;
+package ass2.objects;
 import javax.media.opengl.GL2;
 
-import ass2.spec.GameObject;
+import ass2.objects.GameObject;
+import ass2.spec.Texture;
 
 public class TreeObject extends GameObject {
-	private Mesh m;
-	private double[][] vertices;
 	private SphereObject top;
 	private CylinderObject trunk;
 	
-	public TreeObject(GameObject parent) {
+	public TreeObject(GameObject parent, double trunkRadius, double trunkHeight) {
 		super(parent);
 		// TODO Auto-generated constructor stub
-		top =  new SphereObject(this);
-		trunk = new CylinderObject(this);
+		top =  new SphereObject(this, trunkRadius*3);
+		top.translate(0, trunkHeight, 0);
+		trunk = new CylinderObject(this, trunkRadius, trunkHeight);
 	}
 	// Does nothing, draw top and sphere
 	@Override

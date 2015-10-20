@@ -1,13 +1,8 @@
-package ass2.spec;
-
-import java.io.File;
-import java.io.IOException;
+package ass2.objects;
 
 import javax.media.opengl.GL2;
-import javax.media.opengl.GLProfile;
 
-import com.jogamp.opengl.util.texture.TextureData;
-import com.jogamp.opengl.util.texture.TextureIO;
+import ass2.spec.Mesh;
 
 public class CubeObject extends GameObject {
 	Mesh m;

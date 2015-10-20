@@ -1,15 +1,11 @@
-package ass2.spec;
+package ass2.objects;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.media.opengl.GLProfile;
+
+import ass2.spec.Mesh;
+import ass2.spec.Terrain;
 
 //import com.jogamp.opengl.util.texture.Texture;
-import com.jogamp.opengl.util.texture.TextureData;
-import com.jogamp.opengl.util.texture.TextureIO;
 
 public class TerrainGameObject extends GameObject {
 	private Terrain myTerrain = null;

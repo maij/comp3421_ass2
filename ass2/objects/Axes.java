@@ -1,4 +1,4 @@
-package ass2.spec;
+package ass2.objects;
 
 import javax.media.opengl.GL2;
 

@@ -1,9 +1,12 @@
-package ass2.spec;
+package ass2.objects;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.opengl.GL2;
+
+import ass2.spec.MathUtil;
+import ass2.spec.Texture;
 
 
 /**

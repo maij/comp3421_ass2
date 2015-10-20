@@ -4,7 +4,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +16,8 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLJPanel;
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
-import com.jogamp.opengl.util.texture.TextureData;
-import com.jogamp.opengl.util.texture.TextureIO;
+
+import ass2.objects.*;
 
 
 
@@ -109,8 +108,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         cubeLeft.translate(-3, 0, 0);
         cubeRight.translate(3, 0, 0);
         cubes = new CubeObject[]{cubeFront, cubeBack, cubeLeft, cubeRight};
-        GameObject axes = new Axes(GameObject.ROOT);
-        axes.scale(2);
+//        GameObject axes = new Axes(GameObject.ROOT);
+//        axes.scale(2);
         
 //        SphereObject sphere = new SphereObject(GameObject.ROOT);
 //        sphere.translate(0, 2, 0);
@@ -121,9 +120,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     public void drawTrees(List<Tree> t) {
     	trees = new TreeObject[1];
     	
-    	TreeObject tree = new TreeObject(GameObject.ROOT);
-    	tree.translate(0,2,10);
-    	tree.scale(2);
+    	TreeObject tree = new TreeObject(GameObject.ROOT, 0.3, 2);
+    	tree.translate(-2,0,-2);
+//    	tree.scale(2);
     	trees[0] = tree;
     }
     
@@ -156,12 +155,14 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         	c.setTexture(myTextures[1]);
         }
         for (TreeObject t: trees) {
-        	t.setBushTexture(myTextures[1]);
+        	t.setBushTexture(myTextures[0]);
+        	t.setTrunkTexture(myTextures[1]);
         }
         for (SphereObject s: spheres) {
         	s.generateBuffers(gl);
         	s.setTexture(myTextures[0]);
         }
+
         GameObject.ROOT.draw(gl);
 	}
 
@@ -182,8 +183,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		myTextures[0] = new Texture(gl, filename, "png", false);
 		filename = "./textures/grass.png";
 		myTextures[1] = new Texture(gl, filename, "png", false);
+		
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
+		
 		gl.glEnable(GL2.GL_LIGHTING);
 		// Specified as a direction
 		float[] sunDir = new float[]{myTerrain.getSunlight()[0], myTerrain.getSunlight()[1], myTerrain.getSunlight()[2], 0};
@@ -195,9 +198,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		
     	// Material property vectors.
 
-    	float matAmbAndDif2[] = {0.0f, 0.9f, 0.0f, 1.0f};
+    	float matAmbAndDif2[] = {1.0f, 1.0f, 1.0f, 1.0f};
     	float matSpec[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    	float matShine[] = { 50.0f };
+    	float matShine[] = { 0.0f };
 //
 //    	// Material property vectors.
     	float matAmbAndDif1[] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -211,6 +214,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //    	// Specify how texture values combine with current surface color values.
     	gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE); 
 
+    	gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING);
     	// Turn on OpenGL texturing.
     	gl.glEnable(GL2.GL_TEXTURE_2D);
 		

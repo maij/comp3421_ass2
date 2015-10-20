@@ -3,6 +3,8 @@ package ass2.spec;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
+import ass2.objects.GameObject;
+
 public class Camera extends GameObject {
 	
 	 	private float[] myBackground;
