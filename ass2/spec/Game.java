@@ -38,7 +38,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private TreeObject[] myTrees = new TreeObject[]{};
     private SphereObject[] spheres = new SphereObject[]{};
     
-    
+    private static final double myHeight 	= 0.5;
     private static final double trunkRadius = 0.3;
     private static final double trunkHeight = 3;
     
@@ -86,7 +86,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
           animator.start();
 
           getContentPane().add(panel);
-          setSize(1920, 1080);        
+          setSize(640, 480);        
           setVisible(true);
           setDefaultCloseOperation(EXIT_ON_CLOSE);        
     }
@@ -126,8 +126,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     	myTrees = new TreeObject[trees.size()];
     	for (int i = 0; i < trees.size(); i++) {
     		myTrees[i] = new TreeObject(GameObject.ROOT,trunkRadius,trunkHeight);
-    		double[] pos = trees.get(i).getPosition();
-    		
     		myTrees[i].translate(trees.get(i).getPosition()[0],
 			    				 trees.get(i).getPosition()[1],
 			    				 trees.get(i).getPosition()[2]);
@@ -160,6 +158,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         update();
         // Add textures to objects
         terrain.setTexture(myTextures[1]);
+        
         for (CubeObject c: cubes) {
         	c.setTexture(myTextures[1]);
         }
@@ -177,7 +176,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
 		// TODO Auto-generated method stub
-		
+//		drawable.destroy();
 	}
 
 	@Override
@@ -258,12 +257,14 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		xdim = myTerrain.size().getWidth();
 		zdim = myTerrain.size().getHeight();
 		// Am I in the terrain?
-		System.out.println(my_pos[1]);
-		System.out.printf("mpx = %f, mpz = %f, tpx = %f, tpz = %f\n", my_pos[0], my_pos[2], t_pos[0], t_pos[2]);
+//		System.out.println(my_pos[1]);
+//		System.out.printf("mpx = %f, mpz = %f, tpx = %f, tpz = %f\n", my_pos[0], my_pos[2], t_pos[0], t_pos[2]);
 		if ((my_pos[0] > t_pos[0] && my_pos[0] < t_pos[0] + xdim) &&
 			(my_pos[2] > t_pos[2] && my_pos[2] < t_pos[2] + zdim)) {
-			System.out.println(myTerrain.altitude(my_pos[0], my_pos[2]));
-			myCamera.setPosition(my_pos[0], myTerrain.altitude(my_pos[0], my_pos[2]), my_pos[2]);
+//			System.out.println(myTerrain.altitude(my_pos[0], my_pos[2]));
+			myCamera.setPosition(my_pos[0], myTerrain.altitude(my_pos[0], my_pos[2]) + myHeight, my_pos[2]);
+		} else {
+			myCamera.setPosition(my_pos[0], myHeight, my_pos[2]);
 		}
 	}
 

@@ -136,7 +136,7 @@ public class Terrain {
         z_hi = (int) (z+1);
         x_lo = (int) (x);
         z_lo = (int) (z);
-        System.out.printf("%d %d %d %d\n", x_hi, z_hi, x_lo, z_lo);
+//        System.out.printf("%d %d %d %d\n", x_hi, z_hi, x_lo, z_lo);
         double y_ll = 0, y_lh = 0, y_hl = 0, y_hh = 0;
         
         // If z_hi or x_hi are out of bounds, then the altitude is 0 (initialized above)
