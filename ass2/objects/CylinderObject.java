@@ -10,7 +10,6 @@ public class CylinderObject extends GameObject {
 	private double[][] normals = new double[numVertices/2][3];
 	public CylinderObject(GameObject parent, double radius, double height) {
 		super(parent);
-		// TODO Auto-generated constructor stub'
 		for (int i = 0; i < numEdges; i++) {
 			double x = radius*Math.cos(2*Math.PI*i/numEdges);
 			double z = radius*Math.sin(2*Math.PI*i/numEdges);

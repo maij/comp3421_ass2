@@ -33,17 +33,14 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	private Terrain myTerrain;
     private static Camera myCamera;
     private long myTime;
-    private static final int NUM_TEXTURES = 4;
+    private static final int NUM_TEXTURES = 5;
     private Texture[] myTextures;
     private TerrainGameObject terrain;
     private CubeObject[] cubes = new CubeObject[]{};
-    private TreeObject[] myTrees = new TreeObject[]{};
     private SphereObject[] spheres = new SphereObject[]{};
     
     
     private static final double myHeight 	= 1.2;
-    private static final double trunkRadius = 0.3;
-    private static final double trunkHeight = 3;
     
     public Game(Terrain terrain) {
     	super("Assignment 2");
@@ -63,13 +60,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		  GLJPanel panel = new GLJPanel(caps);
 		  panel.addGLEventListener(this);
 		  
-		  terrain = new TerrainGameObject(GameObject.ROOT);
-		  terrain.setTerrain(myTerrain);
-		  terrain.generateMesh(myTerrain);
+		  terrain = new TerrainGameObject(GameObject.ROOT, myTerrain);
 		          
 		  
 //		  drawWorldObjects();
-		  drawTrees(myTerrain.trees());
+//		  drawTrees(myTerrain.trees());
 		  
 		  
 //		  terrain.translate(5, 0, 5);
@@ -125,17 +120,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //        spheres = new SphereObject[]{sphere};
     }
         
-    public void drawTrees(List<Tree> trees) {
-    	myTrees = new TreeObject[trees.size()];
-    	for (int i = 0; i < trees.size(); i++) {
-    		myTrees[i] = new TreeObject(GameObject.ROOT,trunkRadius,trunkHeight);
-    		myTrees[i].translate(trees.get(i).getPosition()[0],
-			    				 trees.get(i).getPosition()[1],
-			    				 trees.get(i).getPosition()[2]);
-    		
-    	}
-    }
-    
     private void update() {
         // compute the time since the last frame
         long time = System.currentTimeMillis();
@@ -161,13 +145,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         update();
         // Add textures to objects
         terrain.setTexture(myTextures[1]);
+        terrain.setTreeTextures(myTextures[3], myTextures[2]);
+        terrain.setRoadTexture(myTextures[4]);
         
         for (CubeObject c: cubes) {
         	c.setTexture(myTextures[1]);
-        }
-        for (TreeObject t: myTrees) {
-        	t.setBushTexture(myTextures[3]);
-        	t.setTrunkTexture(myTextures[2]);
         }
         for (SphereObject s: spheres) {
         	s.setTexture(myTextures[0]);
@@ -197,6 +179,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		myTextures[2] = new Texture(gl, filename, "png", false);
 		filename = "./textures/branches.png";
 		myTextures[3] = new Texture(gl, filename, "png", false);
+		filename = "./textures/road.png";
+		myTextures[4] = new Texture(gl, filename, "png", false);
 		
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
@@ -256,10 +240,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			case KeyEvent.VK_DOWN : myCamera.enableMovement(); myCamera.setTransDirection(1); break;
 			case KeyEvent.VK_LEFT :  myCamera.enableTurning(); myCamera.setRotDirection(1);	break;
 			case KeyEvent.VK_RIGHT:  myCamera.enableTurning(); myCamera.setRotDirection(-1); break;
-			case KeyEvent.VK_B	  : myCamera.scale(2); break;
-			case KeyEvent.VK_S	  : myCamera.scale(0.5); break;
-			// Translate up the hill
-//			case KeyEvent.VK_SPACE: swap_texture = !swap_texture; break;
 		}
 		double xdim, zdim;
 		double[] my_pos = myCamera.getGlobalPosition();
@@ -272,10 +252,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		if ((my_pos[0] > t_pos[0] && my_pos[0] < t_pos[0] + xdim) &&
 			(my_pos[2] > t_pos[2] && my_pos[2] < t_pos[2] + zdim)) {
 			myCamera.setPosition(my_pos[0], myTerrain.altitude(my_pos[0], my_pos[2]) + myHeight, my_pos[2]);
+//			System.out.printf("interp = %f\n", myTerrain.altitude(my_pos[0], my_pos[2]));
 		} else {
 			myCamera.setPosition(my_pos[0], myHeight, my_pos[2]);
 		}
-		System.out.println(myCamera.getGlobalPosition()[1]);
+//		System.out.println(myCamera.getGlobalPosition()[1]);
 		
 	}
 

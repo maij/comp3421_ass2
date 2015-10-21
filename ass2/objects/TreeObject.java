@@ -15,10 +15,6 @@ public class TreeObject extends GameObject {
 		top.translate(0, trunkHeight, 0);
 		trunk = new CylinderObject(this, trunkRadius, trunkHeight);
 	}
-	// Does nothing, draw top and sphere
-	@Override
-	public void drawSelf(GL2 gl) {
-	}
 	
 	public void setBushTexture(Texture t) {
 		top.setTexture(t);

@@ -70,9 +70,11 @@ public class Mesh {
 				for (int v_index : face_verts.get(i)) {
 					double x, y, z;
 
-//					gl.glTexCoord2d(1/face_verts.size(), 1/face_verts.size());
-					double[] uv = uv_map.get(v_index);
-					gl.glTexCoord2d(uv[0], uv[1]);
+					// Each vertex should have a uv coord.
+					if (uv_map.size() == vertices.size()) {
+						double[] uv = uv_map.get(v_index);
+						gl.glTexCoord2d(uv[0], uv[1]);
+					}
 					
 					x = vertices.get(v_index)[0];
 					y = vertices.get(v_index)[1];

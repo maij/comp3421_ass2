@@ -141,6 +141,7 @@ public class Terrain {
         
         // If z_hi or x_hi are out of bounds, then the altitude is 0 (initialized above)
         y_ll = getGridAltitude(x_lo,z_lo);
+//        System.out.printf("Out of Bounds?\t z_hi :: %b; x_hi :: %b\n", z_hi > size().getHeight(), x_hi > size().getWidth());
         if (z_hi < size().getHeight())
         	y_lh = getGridAltitude(x_lo,z_hi);
         if (x_hi < size().getWidth())
@@ -148,8 +149,8 @@ public class Terrain {
         if (x_hi < size().getWidth() && z_hi < size().getHeight())
         y_hh = getGridAltitude(x_hi,z_hi);
         
-        // Low and high altitudes wrt the z axis
         // Bilinearly interpolating, first with x.
+        // Low and high altitudes wrt the z axis (i.e. y_lo is at z = z_lo, y_hi is at z = z_hi)
         double y_lo, y_hi;
         y_lo = x_prop*y_hl + (1-x_prop)*y_ll;
         y_hi = x_prop*y_hh + (1-x_prop)*y_lh;

@@ -42,6 +42,26 @@ public class MathUtil {
     	return ((angle + 180.0) % 360.0 + 360.0) % 360.0 - 180.0;
 	}
 	
+	static public double[] surfaceNormal(double[] p1, double[] p2, double[] p3) {
+		double x1, y1, z1, x2, y2, z2, x3, y3, z3;
+		x1 = p1[0];
+		y1 = p1[1];
+		z1 = p1[2];
+		x2 = p2[0];
+		y2 = p2[1];
+		z2 = p2[2];
+		x3 = p3[0];
+		y3 = p3[1];
+		z3 = p3[2];
+		
+		// Found from cross product of vectors P_12, P_13
+		return new double[]{
+				(y2-y1)*(z3-z1) - (y3-y1)*(z2-z1),
+				(z2-z1)*(x3-x1) - (x2-x1)*(z3-z1),
+				(x2-x1)*(y3-y1) - (x3-x1)*(y2-y1)
+		};
+	}
+	
     /**
      * Normalise an array of angles to the range (-180, 180]
      * 
