@@ -10,7 +10,8 @@ import ass2.spec.Terrain;
 
 public class RoadObject extends GameObject {
 	private Road myRoad;
-	private static final double delta_t = 0.001;
+	private static final double delta_t = 0.01;
+	private static final double y_offset = 0.01;
 	private Mesh m;
 	
 	public RoadObject(GameObject parent, Road r, Terrain t) {
@@ -23,20 +24,24 @@ public class RoadObject extends GameObject {
 		// Add vertices
 		for (double i = 0; i < r.size(); i += delta_t*r.size()) {
 			double[] p = myRoad.point(i);
-			System.out.printf("%f %f\n",p[0], p[1]);
-			m.addUVCoord(new double[]{i/r.size(), 0});
-			m.addVertex(new double[]{p[0],
-									 t.altitude(p[0], p[1]-width/2),
+			System.out.printf("%f %f\n", p[0], p[1]);
+//			System.out.printf("L: %f %f %f\n",p[0], t.altitude(p[0], p[1]-width/2) ,p[1]-width/2);
+//			System.out.printf("C: %f %f %f\n",p[0], t.altitude(p[0], p[1]) ,p[1]);
+//			System.out.printf("R: %f %f %f\n",p[0], t.altitude(p[0], p[1]+width/2) ,p[1]+width/2);
+//			System.out.println();
+			m.addUVCoord(new double[]{0, (r.size()-i)/r.size()});
+			m.addVertex(new double[]{p[0]-width/2,
+									 t.altitude(p[0], p[1]) + y_offset,
 									 p[1]-width/2});
 			
-			m.addUVCoord(new double[]{i/r.size(), 0.5});
+			m.addUVCoord(new double[]{0.5, (r.size()-i)/r.size()});
 			m.addVertex(new double[]{p[0],
-				 					 t.altitude(p[0], p[1]),
+				 					 t.altitude(p[0], p[1]) + y_offset,
 								 	 p[1]});
 
-			m.addUVCoord(new double[]{i/r.size(), 1});
-			m.addVertex(new double[]{p[0],
-					 				 t.altitude(p[0], p[1]+width/2),
+			m.addUVCoord(new double[]{1, (r.size()-i)/r.size()});
+			m.addVertex(new double[]{p[0]+width/2,
+					 				 t.altitude(p[0], p[1]) + y_offset,
 					 				 p[1]+width/2});
 		}
 		

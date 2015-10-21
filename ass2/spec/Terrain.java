@@ -112,8 +112,6 @@ public class Terrain {
      * Get the altitude at an arbitrary point. 
      * Non-integer points should be interpolated from neighbouring grid points
      * 
-     * TO BE COMPLETED
-     * 
      * @param x
      * @param z
      * @return
@@ -123,7 +121,9 @@ public class Terrain {
         double x_prop = x - (long)x;
         double z_prop = z - (long)z;
         int x_hi, x_lo, z_hi, z_lo;
-        
+        if (x < 0 || x >= size().getWidth() || z < 0 || z >= size().getHeight()) {
+        	return altitude;
+        }
         //  (x_hi,y_hl,z_lo)  (x_hi,y_hh,z_hi)   
         // 	          	+-----+  
         //     		  	|    /|  
@@ -154,11 +154,14 @@ public class Terrain {
         double y_lo, y_hi;
         y_lo = x_prop*y_hl + (1-x_prop)*y_ll;
         y_hi = x_prop*y_hh + (1-x_prop)*y_lh;
+        System.out.printf("");
         // Now interpolate along z
         altitude = z_prop*y_hi + (1-z_prop)*y_lo;
 //        System.out.printf("x  = %f z  = %f\n", x_prop, z_prop);
 //        System.out.printf("xp = %f zp = %f\n", x_prop, z_prop);
-        
+
+//        System.out.printf("Alts: %f %f %f %f\n", y_ll, y_lh, y_hl, y_hh);
+//        System.out.printf("Altitude: %f %f %f\n", x, altitude, z);
         return altitude;
     }
 

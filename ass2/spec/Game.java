@@ -82,7 +82,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
           FPSAnimator animator = new FPSAnimator(60);
           animator.add(panel);
           animator.start();
-
+          myCamera.setPosition(8, myHeight, 1);
+          myCamera.setRotation(new double[]{0,-270,0});
           getContentPane().add(panel);
           setSize(640, 480);        
           setVisible(true);
@@ -170,6 +171,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		myTime = System.currentTimeMillis();
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glFrontFace( GL2.GL_CCW);
+		gl.glPolygonOffset(1.0f, 1.0f);
 		myTextures = new Texture[NUM_TEXTURES];
 		String filename = "./textures/grass_texture.png";
 		myTextures[0] = new Texture(gl, filename, "png", false);
