@@ -1,6 +1,7 @@
 package ass2.objects;
 
 import java.util.List;
+import java.util.function.Function;
 
 import javax.media.opengl.GL2;
 
@@ -45,9 +46,17 @@ public class TerrainGameObject extends GameObject {
 	}
 	
 	private void drawRoads(List<Road> r) {
+		// Give 
 		roads = new RoadObject[r.size()];
 		for (int i = 0; i < r.size(); i++) {
-			roads[i] = new RoadObject(GameObject.ROOT, r.get(i), this.myTerrain);
+			roads[i] = new RoadObject(GameObject.ROOT, r.get(i), new Function<double[], Double>() {
+
+				@Override
+				public Double apply(double[] t) {
+					return myTerrain.altitude(t[0],t[1]);
+				}
+				
+			});
 		}
 	}
 	

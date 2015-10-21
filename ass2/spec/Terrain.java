@@ -154,7 +154,6 @@ public class Terrain {
         double y_lo, y_hi;
         y_lo = x_prop*y_hl + (1-x_prop)*y_ll;
         y_hi = x_prop*y_hh + (1-x_prop)*y_lh;
-        System.out.printf("");
         // Now interpolate along z
         altitude = z_prop*y_hi + (1-z_prop)*y_lo;
 //        System.out.printf("x  = %f z  = %f\n", x_prop, z_prop);

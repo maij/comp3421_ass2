@@ -172,17 +172,19 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glFrontFace( GL2.GL_CCW);
 		gl.glPolygonOffset(1.0f, 1.0f);
+		// Big points for debugging
+		gl.glPointSize(5.0f);
 		myTextures = new Texture[NUM_TEXTURES];
 		String filename = "./textures/grass_texture.png";
-		myTextures[0] = new Texture(gl, filename, "png", false);
+		myTextures[0] = new Texture(gl, filename, "png", true);
 		filename = "./textures/grass.png";
-		myTextures[1] = new Texture(gl, filename, "png", false);
+		myTextures[1] = new Texture(gl, filename, "png", true);
 		filename = "./textures/wood.png";
-		myTextures[2] = new Texture(gl, filename, "png", false);
+		myTextures[2] = new Texture(gl, filename, "png", true);
 		filename = "./textures/branches.png";
-		myTextures[3] = new Texture(gl, filename, "png", false);
+		myTextures[3] = new Texture(gl, filename, "png", true);
 		filename = "./textures/road.png";
-		myTextures[4] = new Texture(gl, filename, "png", false);
+		myTextures[4] = new Texture(gl, filename, "png", true);
 		
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
@@ -198,7 +200,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		
     	// Material property vectors.
 
-    	float matAmbAndDif2[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    	float matAmbAndDif2[] = {0f, 1.0f, 1.0f, 1.0f};
     	float matSpec[] = { 1.0f, 1.0f, 1.0f, 1.0f };
     	float matShine[] = { 0.0f };
 //
@@ -214,7 +216,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //    	// Specify how texture values combine with current surface color values.
     	gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE); 
 
-    	gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING);
     	// Turn on OpenGL texturing.
     	gl.glEnable(GL2.GL_TEXTURE_2D);
 		

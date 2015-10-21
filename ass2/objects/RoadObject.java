@@ -1,58 +1,55 @@
 package ass2.objects;
 
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import javax.media.opengl.GL2;
 
 import ass2.spec.Mesh;
 import ass2.spec.Road;
-import ass2.spec.Terrain;
 
 public class RoadObject extends GameObject {
 	private Road myRoad;
 	private static final double delta_t = 0.01;
-	private static final double y_offset = 0.01;
+	private static final double y_offset = 0.05;
+	private static final int numSplines = 100;
 	private Mesh m;
-	
-	public RoadObject(GameObject parent, Road r, Terrain t) {
+	// f is a function to return the altitude of the road
+	public RoadObject(GameObject parent, Road r, Function<double[], Double> f) {
 		super(parent);
 		m = new Mesh();
 		myRoad = r;
 		
 		double width = myRoad.width();
-		
 		// Add vertices
-		for (double i = 0; i < r.size(); i += delta_t*r.size()) {
-			double[] p = myRoad.point(i);
-			System.out.printf("%f %f\n", p[0], p[1]);
-//			System.out.printf("L: %f %f %f\n",p[0], t.altitude(p[0], p[1]-width/2) ,p[1]-width/2);
-//			System.out.printf("C: %f %f %f\n",p[0], t.altitude(p[0], p[1]) ,p[1]);
-//			System.out.printf("R: %f %f %f\n",p[0], t.altitude(p[0], p[1]+width/2) ,p[1]+width/2);
-//			System.out.println();
-			m.addUVCoord(new double[]{0, (r.size()-i)/r.size()});
-			m.addVertex(new double[]{p[0]-width/2,
-									 t.altitude(p[0], p[1]) + y_offset,
-									 p[1]-width/2});
+		for (double i = 0; i < 1; i += delta_t) {
+			double root8 = 2*Math.sqrt(2);
 			
-			m.addUVCoord(new double[]{0.5, (r.size()-i)/r.size()});
-			m.addVertex(new double[]{p[0],
-				 					 t.altitude(p[0], p[1]) + y_offset,
-								 	 p[1]});
+			for (int j = 0; j < numSplines; j++) {
+				double[] p = r.point(i*r.size());
+				p[0] += width/root8*(2*(double)j/((double)numSplines - 1) - 1);
+				p[1] += width/root8*(2*(double)j/((double)numSplines - 1) - 1);
+//				System.out.printf("%d: %f\n",j, width/root2*(2*(double)j/numSplines - 1));
+//				System.out.printf("p%d : %f %f\n",j, p[0], p[1]);
 
-			m.addUVCoord(new double[]{1, (r.size()-i)/r.size()});
-			m.addVertex(new double[]{p[0]+width/2,
-					 				 t.altitude(p[0], p[1]) + y_offset,
-					 				 p[1]+width/2});
+//				System.out.printf("%f\n", (double)j/((double)(numSplines-1)));
+				m.addUVCoord(new double[]{(double)j/((double)(numSplines-1)), (1-i/(1-delta_t)) });
+				m.addVertex(new double[]{p[0],
+										 f.apply( p  ) + y_offset,
+										 p[1]});
+			}
+//			System.out.printf("%f\n", (1-i*(1/(1-delta_t))));
 		}
 		
-		m.addNormal(new double[]{0,0,0});
 		
+		
+		m.addNormal(new double[]{0,1,0});
+
 		// Add faces
-		for (int i = 0; i < (r.size()/delta_t)-1; i++) {
-			m.addFace(new int[]{3*i+1,3*i+3,3*i  }, 0);
-			m.addFace(new int[]{3*i+4,3*i+3,3*i+1}, 0);
-			m.addFace(new int[]{3*i+5,3*i+4,3*i+1}, 0);
-			m.addFace(new int[]{3*i+2,3*i+5,3*i+1}, 0);
+		for (int i = 0;  i < 1/delta_t - 1; i++) {
+			for (int j = 0; j < numSplines-1; j++) {
+				m.addFace(new int[]{i*numSplines + j, i*numSplines+j+1,(i+1)*numSplines+j+1, (i+1)*numSplines+j}, 0);
+			}
 		}
 	}
 	
