@@ -32,6 +32,24 @@ public class MathUtil {
 		}
 	}
 	
+	static public double[] normaliseVectord(double[] v) {
+		double[] nv = new double[3];
+		double len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+		nv[0] = v[0]/len;
+		nv[1] = v[1]/len;
+		nv[2] = v[2]/len;
+		return nv;
+	}
+	
+	static public float[] normaliseVectorf(float[] v) {
+		float[] nv = new float[3];
+		float len = (float)Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+		nv[0] = v[0]/len;
+		nv[1] = v[1]/len;
+		nv[2] = v[2]/len;
+		return nv;
+	}
+	
 	/**
      * Normalise an angle to the range (-180, 180]
      * 

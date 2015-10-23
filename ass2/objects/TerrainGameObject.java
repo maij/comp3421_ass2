@@ -80,54 +80,40 @@ public class TerrainGameObject extends GameObject {
 		// Add all the vertices and normals
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
+//				System.out.printf("T: %d %f %d\n", i, t.getGridAltitude(i, j), j);
 				m.addVertex(new double[]{i, t.getGridAltitude(i, j), j});
 				m.addUVCoord(new double[]{i,j});
 			}
 		}
 		
-		// TODO: Add all the normals
-		m.addNormal(new double[]{0, 0, 0});
-		
 		// Add all the faces
-		for (int i = 0; i < t.size().getWidth(); i++) {
-			for (int j = 0; j < t.size().getHeight(); j++) {
+		for (int i = 0; i < width-1; i++) {
+			for (int j = 0; j < height-1; j++) {
 				double x1, y1, z1, x2, y2, z2, x3, y3, z3;
 				//P1
 				x1 = i;
 				y1 = t.getGridAltitude(i, j);
 				z1 = j;
 				// P2
-				x2 = Integer.min(i+1, width-1);
-				y2 = t.getGridAltitude(Integer.min(i+1, width-1), j);
+				x2 = i+1;
+				y2 = t.getGridAltitude(i+1, j);
 				z2 = j;
 				// P3
-				x3 = Integer.min(i+1, width-1);
-				y3 = t.getGridAltitude(Integer.min(i+1, width-1), Integer.min(j+1, height-1));
-				z3 = Integer.min(j+1, height-1);
+				x3 = i+1;
+				y3 = t.getGridAltitude(i+1, j+1);
+				z3 = j+1;
+
+				
 				m.addNormal(MathUtil.surfaceNormal(new double[]{x1,y1,z1}, 
 												   new double[]{x2,y2,z2}, 
 												   new double[]{x3,y3,z3}));
 				
-				m.addFace(new int[]{(int) (Integer.min(i+1, width-1)*width+j), 
+				m.addFace(new int[]{(int) ((i+1)*width+j), 
 									(int) (i*width+j), 
-									(int) (Integer.min(i+1, width-1)*width+Integer.min(j+1, height-1))}, 
+									(int) (i*width+j+1), 
+									(int) ((i+1)*width+j+1)}, 
 									// Face normal
-									2*(i*width+j));
-				
-				// Add the normal to the second surface, note P1 and P3 are shared
-				// P2
-				x2 = i;
-				y2 = t.getGridAltitude(i, Integer.min(j+1, height-1));
-				z2 = Integer.min(j+1, height-1);
-				m.addNormal(MathUtil.surfaceNormal(new double[]{x1,y1,z1}, 
-						   new double[]{x2,y2,z2}, 
-						   new double[]{x3,y3,z3}));
-
-				m.addFace(new int[]{(int) (i*width+j), 
-									(int) (i*width+Integer.min(j+1, height-1)), 
-									(int) (Integer.min(i+1, width-1)*width+Integer.min(j+1, height-1))}, 
-									// Face normal
-									2*(i*width+j)+1);
+									(i*(width-1)+j));
 			}
 		}
 		myMesh = m;

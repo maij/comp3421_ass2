@@ -151,11 +151,16 @@ public class Terrain {
         
         // Bilinearly interpolating, first with x.
         // Low and high altitudes wrt the z axis (i.e. y_lo is at z = z_lo, y_hi is at z = z_hi)
-        double y_lo, y_hi;
-        y_lo = x_prop*y_hl + (1-x_prop)*y_ll;
-        y_hi = x_prop*y_hh + (1-x_prop)*y_lh;
+        double y_lo_x, y_hi_x, y_lo_z, y_hi_z;
+        y_lo_x = x_prop*y_hl + (1-x_prop)*y_ll;
+        y_hi_x = x_prop*y_hh + (1-x_prop)*y_lh;
         // Now interpolate along z
-        altitude = z_prop*y_hi + (1-z_prop)*y_lo;
+//        y_lo_z = z_prop*y_lh + (1-z_prop)*y_ll;
+//        y_hi_z = z_prop*y_hh + (1-z_prop)*y_ll;
+        
+        altitude = z_prop*y_hi_x + (1-z_prop)*y_lo_x; //+ (x_prop*y_hi_z + (1- x_prop)*y_lo_z));
+//        altitude = (z_prop*y_hi_x + (1-z_prop*y_lo_x)) * (x_prop*y_hi_z + (1- x_prop)*y_lo_z) +
+//        		   ((1-z_prop)*y_hi_x + z_prop*y_lo_x) * ((1-x_prop)*y_hi_z + x_prop*y_lo_z);
 //        System.out.printf("x  = %f z  = %f\n", x_prop, z_prop);
 //        System.out.printf("xp = %f zp = %f\n", x_prop, z_prop);
 

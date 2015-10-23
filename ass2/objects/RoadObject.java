@@ -12,7 +12,7 @@ public class RoadObject extends GameObject {
 	private Road myRoad;
 	private static final double delta_t = 0.01;
 	private static final double y_offset = 0.05;
-	private static final int numSplines = 100;
+	private static final int numSplines = 101;
 	private Mesh m;
 	// f is a function to return the altitude of the road
 	public RoadObject(GameObject parent, Road r, Function<double[], Double> f) {
@@ -20,22 +20,28 @@ public class RoadObject extends GameObject {
 		m = new Mesh();
 		myRoad = r;
 		
+		// Calculate the distance between end splines
 		double width = myRoad.width();
+		double root8 = 2*Math.sqrt(2);
+		double spline_dist = width/root8;
 		// Add vertices
 		for (double i = 0; i < 1; i += delta_t) {
-			double root8 = 2*Math.sqrt(2);
-			
 			for (int j = 0; j < numSplines; j++) {
 				double[] p = r.point(i*r.size());
-				p[0] += width/root8*(2*(double)j/((double)numSplines - 1) - 1);
-				p[1] += width/root8*(2*(double)j/((double)numSplines - 1) - 1);
+
+//				System.out.printf("R: %f %f %f\n", p[0], f.apply(p), p[1]);
+				p[0] += spline_dist*(2*(double)j/((double)numSplines - 1) - 1);
+				p[1] += spline_dist*(2*(double)j/((double)numSplines - 1) - 1);
+//				
+//				System.out.printf("R: %f %f %f\n\n", p[0], f.apply(p), p[1]);
 //				System.out.printf("%d: %f\n",j, width/root2*(2*(double)j/numSplines - 1));
 //				System.out.printf("p%d : %f %f\n",j, p[0], p[1]);
 
 //				System.out.printf("%f\n", (double)j/((double)(numSplines-1)));
 				m.addUVCoord(new double[]{(double)j/((double)(numSplines-1)), (1-i/(1-delta_t)) });
+				
 				m.addVertex(new double[]{p[0],
-										 f.apply( p  ) + y_offset,
+										 f.apply( r.point(i*r.size())  ) + y_offset,
 										 p[1]});
 			}
 //			System.out.printf("%f\n", (1-i*(1/(1-delta_t))));
