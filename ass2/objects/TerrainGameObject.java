@@ -38,7 +38,7 @@ public class TerrainGameObject extends GameObject {
 		}
 	}
 	
-	public void setTreeTextures(Texture bush, Texture trunk) {
+	public void setTreeTextures(Texture trunk, Texture bush) {
 		for (TreeObject t: trees) {
 			t.setBushTexture(bush);
 			t.setTrunkTexture(trunk);

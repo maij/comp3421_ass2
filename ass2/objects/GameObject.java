@@ -70,6 +70,10 @@ public class GameObject {
         ALL_OBJECTS.add(this);
     }
     
+    public void toggleShowing() {
+		amShowing = !amShowing;
+	}
+    
     private void init_transforms() {
     	myRotation = new double[3];
         myRotation[0] = 0;

@@ -80,7 +80,7 @@ public class MathUtil {
 		};
 	}
 	
-    /**
+	/**
      * Normalise an array of angles to the range (-180, 180]
      * 
      * @param angles
@@ -90,6 +90,20 @@ public class MathUtil {
         double[] normal = new double[3];
         for (int i = 0; i < 3; i++) {
         	normal[i] = normaliseAngle(angles[i]);
+        }
+    	return normal;
+    }
+    
+    /**
+     * Normalise an array of angles to the range (-180, 180]
+     * 
+     * @param angles
+     * @return
+     */
+    static public float[] normaliseAngleArray(float[] angles) {
+        float[] normal = new float[3];
+        for (int i = 0; i < 3; i++) {
+        	normal[i] = (float)normaliseAngle(angles[i]);
         }
     	return normal;
     }

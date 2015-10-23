@@ -1,20 +1,22 @@
 package ass2.spec;
 
+import java.util.function.Function;
+
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 import com.jogamp.opengl.util.gl2.GLUT;
 
-import ass2.objects.GameObject;
+import ass2.objects.*;
 
 public class Camera extends GameObject {
 	
 	 	private float[] myBackground;
-	 	
-	 	private double transSpeed = 1;
+
 	 	private static final double transBaseSpeed = 0.1;
-	 	private double rotSpeed = 1;
 	 	private static final double rotBaseSpeed = 1;
+	 	private double transSpeed = 1;
+	 	private double rotSpeed = 1;
 	    
 	 	private int transDir = 1;
 	 	private int rotDir = 1;
@@ -22,14 +24,25 @@ public class Camera extends GameObject {
 	    private boolean isMoving;
 	    private boolean isTurning;
 	    
+	    private double myHeight = 1.2;
 	    private boolean isFirstPerson = true;
+	    private Function<double[], Double> altFun;
+	    private PlayerObject myBody;
 	    
-	    
-	    public Camera(GameObject parent) {
+	    public Camera(GameObject parent, Function<double[], Double> f) {
 	        super(parent);
 
 	        myBackground = new float[]{1,1,1,1}; // Default to white background
+	        myBody = new PlayerObject(this);
+	        myBody.translate(0, 0, -1);
+	        myBody.toggleShowing();
+	        altFun = f;
 	        // Note: Replace this by parent's matrix
+	    }
+	    
+	    @Override
+	    public void setTexture(Texture t) {
+	    	myBody.setTexture(t);
 	    }
 	    
 	    public void setTransDirection(int dir) {
@@ -63,17 +76,17 @@ public class Camera extends GameObject {
 	    public void setRotSpeed(double r) {
 	    	rotSpeed = r;
 	    }
-
-	    public Camera() {
-	        this(GameObject.ROOT);
-	    }
 	    
 	    public void togglePerspective() {
 	    	if (isFirstPerson) {
-	    		this.rotate(new double[]{0,0,0});
+	    		this.translate(-2*Math.cos(getRotation()[1]*Math.PI/180.0), 1, -2*Math.sin(getRotation()[1]*Math.PI/180.0));
+//	    		this.rotafte(new double[]{-26,0,0});
 	    	} else {
+	    		this.translate(2*Math.cos(getRotation()[1]*Math.PI/180.0), -1, 2*Math.sin(getRotation()[1]*Math.PI/180.0));
+//	    		this.rotate(new double[]{26,0,0});
 //	    		this.rotate(new double[]{0,0,0});
 	    	}
+	    	myBody.toggleShowing();
 	    	isFirstPerson = !isFirstPerson;
 	    	
 	    }
@@ -149,23 +162,13 @@ public class Camera extends GameObject {
 	    }
 	    
 	    @Override
-		public void drawSelf (GL2 gl) {
-	    	GLUT glut = new GLUT();
-	    	if (! isFirstPerson) {
-	    		double[] centre = MathUtil.multiply(MathUtil.rotationMatrix(getRotation()), new double[]{0,0,-1,0});
-//	    		gl.glTranslated(-centre[0], 0, -centre[2]);
-//	    		y += 1;
-//				x -= 2*Math.cos(getRotation()[1]*Math.PI/180.0);
-//				z -= 2*Math.sin(getRotation()[1]*Math.PI/180.0);
-				
-	    		glut.glutSolidTeapot(0.1);
-	    	}
-	    }
-
-	    @Override
 		public void update(double dt) {
-	    	if (isMoving)
-	    		this.translate(0,0,transSpeed*transBaseSpeed*transDir);
+	    	if (isMoving) {
+	    		double[] p = getGlobalPosition();
+	    		double[] xz = new double[]{p[0], p[2]}; 
+	    		// Calculate altitude, translate by difference between old and new values
+	    		this.translate(0,(altFun.apply(xz) + myHeight - p[1]),transSpeed*transBaseSpeed*transDir);
+	    	}
 	    	if (isTurning)
     			this.rotate(new double[]{0,rotSpeed*rotBaseSpeed*rotDir,0});
 	    }

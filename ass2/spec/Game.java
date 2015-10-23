@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -33,12 +34,23 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	private Terrain myTerrain;
     private static Camera myCamera;
     private long myTime;
-    private static final int NUM_TEXTURES = 5;
+    private static final int NUM_TEXTURES = 6;
     private Texture[] myTextures;
     private TerrainGameObject terrain;
     private CubeObject[] cubes = new CubeObject[]{};
     private SphereObject[] spheres = new SphereObject[]{};
     private float[] mySun;
+    
+    String[] textureFiles = new String[]{
+    		"./textures/grass.png",
+    		"./textures/wood.png",
+    		"./textures/branches.png",
+    		"./textures/road.png",
+    		"./textures/brushed_gold.png",
+    		"./textures/gradient_gold.png",
+    };
+    
+    private boolean isTimePassing = false;
     
     private static final double myHeight 	= 1.2;
     
@@ -67,7 +79,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		  
 //		  terrain.translate(5, 0, 5);
 		  
-		  myCamera = new Camera(GameObject.ROOT);
+		  myCamera = new Camera(GameObject.ROOT, new Function<double[], Double>() {
+			@Override
+			public Double apply(double[] t) {
+				return myTerrain.altitude(t[0], t[1]);
+			}
+		  });
 		  myCamera.translate(0, 0.5, 0);
 		  myCamera.scale(2);
 		  myCamera.rotate(new double[]{0,-90,0});	//face in the +x direction
@@ -80,7 +97,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
           FPSAnimator animator = new FPSAnimator(60);
           animator.add(panel);
           animator.start();
-          myCamera.setPosition(8, myHeight, 1);
+          myCamera.setPosition(8, 0, 1);
           myCamera.setRotation(new double[]{0,-270,0});
           getContentPane().add(panel);
           setSize(640, 480);        
@@ -124,10 +141,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         long time = System.currentTimeMillis();
         double dt = (time - myTime) / 1000.0;
         myTime = time;
-        mySun[0] = (myTerrain.getSunlight()[0] + (float)Math.sin(time/1000.0  *Math.PI*2))*(-100);
-        mySun[1] = (myTerrain.getSunlight()[1] + (float)Math.sin(time/1000.0  *Math.PI*2))*(-100);
-        mySun[2] = (myTerrain.getSunlight()[2] + (float)Math.sin(time/1000.0  *Math.PI*2))*(-100);
-        System.out.printf("x = %f, y= %f\n", mySun[0], mySun[1]);
+        if (isTimePassing) {
+	        mySun[0] = (float)Math.cos(time/1000.0 /60.0  *Math.PI*2)*(-100);
+	        mySun[1] = (float)Math.sin(time/1000.0 /60.0  *Math.PI*2)*(-100);
+	        mySun[2] = (1)*(-100);
+	        mySun = MathUtil.normaliseAngleArray(mySun);
+	        System.out.printf("x = %f, y= %f\n", mySun[0], mySun[1]);
+        }
         // take a copy of the ALL_OBJECTS list to avoid errors 
         // if new objects are created in the update
         List<GameObject> objects = new ArrayList<GameObject>(GameObject.ALL_OBJECTS);
@@ -146,14 +166,24 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
         update();
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION , mySun, 0);
-		float[] ambient = new float[]{0.0f,0.0f,0.0f,0.0f};
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambient, 0);
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, ambient, 0);
-        // Add textures to objects
-        terrain.setTexture(myTextures[1]);
-        terrain.setTreeTextures(myTextures[3], myTextures[2]);
-        terrain.setRoadTexture(myTextures[4]);
-        
+		float[] ambient;
+		if (isTimePassing) {
+			float sunStrength = (mySun[1]/100 + 1)/2;
+			if (sunStrength < 0) {
+				sunStrength = 0;
+			}
+			ambient = new float[]{0.1f,0.1f,0.1f, sunStrength};
+			System.out.printf("amb: %f\n", sunStrength);
+			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambient, 0);
+			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, ambient, 0);
+	        
+		}
+		// Add textures to objects
+        terrain.setTexture(myTextures[0]);
+        terrain.setTreeTextures(myTextures[1], myTextures[2]);
+        terrain.setRoadTexture(myTextures[3]);
+        // My teapot.
+		myCamera.setTexture(myTextures[5]);
         for (CubeObject c: cubes) {
         	c.setTexture(myTextures[1]);
         }
@@ -179,24 +209,22 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glPolygonOffset(1.0f, 1.0f);
 		// Big points for debugging
 		gl.glPointSize(5.0f);
+		
+		// Add all textures
 		myTextures = new Texture[NUM_TEXTURES];
-		String filename = "./textures/grass_texture.png";
-		myTextures[0] = new Texture(gl, filename, "png", true);
-		filename = "./textures/grass.png";
-		myTextures[1] = new Texture(gl, filename, "png", true);
-		filename = "./textures/wood.png";
-		myTextures[2] = new Texture(gl, filename, "png", true);
-		filename = "./textures/branches.png";
-		myTextures[3] = new Texture(gl, filename, "png", true);
-		filename = "./textures/road.png";
-		myTextures[4] = new Texture(gl, filename, "png", true);
+		int i = 0;
+		for (String filename: textureFiles) {
+			myTextures[i] = new Texture(gl, filename, "png", true);
+			i++;
+		}
 		
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
 		
 		gl.glEnable(GL2.GL_LIGHTING);
 		// Specified as a direction
-		mySun = new float[]{myTerrain.getSunlight()[0], myTerrain.getSunlight()[1], myTerrain.getSunlight()[2], 0};
+		mySun = new float[]{-100*myTerrain.getSunlight()[0], -100*myTerrain.getSunlight()[1], -100*myTerrain.getSunlight()[2], 0};
+//		gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{0.5f,0.5f,0.5f,0.2f}, 0);
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION , mySun, 0);
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0);
@@ -248,7 +276,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			case KeyEvent.VK_DOWN : myCamera.enableMovement(); myCamera.setTransDirection(1); break;
 			case KeyEvent.VK_LEFT : myCamera.enableTurning(); myCamera.setRotDirection(1);	break;
 			case KeyEvent.VK_RIGHT: myCamera.enableTurning(); myCamera.setRotDirection(-1); break;
-			case KeyEvent.VK_F	  : myCamera.togglePerspective();
+			case KeyEvent.VK_P	  : myCamera.togglePerspective(); break;
+			case KeyEvent.VK_T	  : isTimePassing = !isTimePassing;
 		}
 		double xdim, zdim;
 		double[] my_pos = myCamera.getGlobalPosition();
@@ -260,10 +289,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //		System.out.printf("mpx = %f, mpz = %f, tpx = %f, tpz = %f\n", my_pos[0], my_pos[2], t_pos[0], t_pos[2]);
 		if ((my_pos[0] > t_pos[0] && my_pos[0] < t_pos[0] + xdim) &&
 			(my_pos[2] > t_pos[2] && my_pos[2] < t_pos[2] + zdim)) {
-			myCamera.setPosition(my_pos[0], myTerrain.altitude(my_pos[0], my_pos[2]) + myHeight, my_pos[2]);
+//			myCamera.translate(0, myTerrain.altitude(my_pos[0], my_pos[2]) + myHeight - my_pos[1], 0);
+//			myCamera.setPosition(my_pos[0], myTerrain.altitude(my_pos[0], my_pos[2]) + myHeight, my_pos[2]);
 //			System.out.printf("interp = %f\n", myTerrain.altitude(my_pos[0], my_pos[2]));
 		} else {
-			myCamera.setPosition(my_pos[0], myHeight, my_pos[2]);
+//			myCamera.setPosition(my_pos[0], myHeight, my_pos[2]);
 		}
 //		System.out.println(myCamera.getGlobalPosition()[1]);
 		
