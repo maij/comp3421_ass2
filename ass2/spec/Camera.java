@@ -3,6 +3,8 @@ package ass2.spec;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
+import com.jogamp.opengl.util.gl2.GLUT;
+
 import ass2.objects.GameObject;
 
 public class Camera extends GameObject {
@@ -19,6 +21,8 @@ public class Camera extends GameObject {
 	 	
 	    private boolean isMoving;
 	    private boolean isTurning;
+	    
+	    private boolean isFirstPerson = true;
 	    
 	    
 	    public Camera(GameObject parent) {
@@ -64,6 +68,16 @@ public class Camera extends GameObject {
 	        this(GameObject.ROOT);
 	    }
 	    
+	    public void togglePerspective() {
+	    	if (isFirstPerson) {
+	    		this.rotate(new double[]{0,0,0});
+	    	} else {
+//	    		this.rotate(new double[]{0,0,0});
+	    	}
+	    	isFirstPerson = !isFirstPerson;
+	    	
+	    }
+	    
 	    public float[] getBackground() {
 	        return myBackground;
 	    }
@@ -95,8 +109,14 @@ public class Camera extends GameObject {
 	    	x = getGlobalPosition()[0];
 	    	y = getGlobalPosition()[1];
 			z = getGlobalPosition()[2];
+			
 			double[] centre = MathUtil.multiply(MathUtil.rotationMatrix(getRotation()), new double[]{0,0,-1,0});
-
+			if (!isFirstPerson) {
+				y += 1;
+				x -= 2*Math.cos(getRotation()[1]*Math.PI/180.0);
+				z -= 2*Math.sin(getRotation()[1]*Math.PI/180.0);
+				centre[1] -= 0.2;
+			}
 			myGLU.gluLookAt(
 	    					x, // x
 	    					y, // y
@@ -126,6 +146,20 @@ public class Camera extends GameObject {
 	    	gl.glLoadIdentity();
 	        GLU myGLU = new GLU();
 	    	myGLU.gluPerspective(40, aspect, 0.1, 160);
+	    }
+	    
+	    @Override
+		public void drawSelf (GL2 gl) {
+	    	GLUT glut = new GLUT();
+	    	if (! isFirstPerson) {
+	    		double[] centre = MathUtil.multiply(MathUtil.rotationMatrix(getRotation()), new double[]{0,0,-1,0});
+//	    		gl.glTranslated(-centre[0], 0, -centre[2]);
+//	    		y += 1;
+//				x -= 2*Math.cos(getRotation()[1]*Math.PI/180.0);
+//				z -= 2*Math.sin(getRotation()[1]*Math.PI/180.0);
+				
+	    		glut.glutSolidTeapot(0.1);
+	    	}
 	    }
 
 	    @Override

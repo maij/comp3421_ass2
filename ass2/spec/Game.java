@@ -246,8 +246,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		switch(key) {
 			case KeyEvent.VK_UP   : myCamera.enableMovement(); myCamera.setTransDirection(-1);	break;
 			case KeyEvent.VK_DOWN : myCamera.enableMovement(); myCamera.setTransDirection(1); break;
-			case KeyEvent.VK_LEFT :  myCamera.enableTurning(); myCamera.setRotDirection(1);	break;
-			case KeyEvent.VK_RIGHT:  myCamera.enableTurning(); myCamera.setRotDirection(-1); break;
+			case KeyEvent.VK_LEFT : myCamera.enableTurning(); myCamera.setRotDirection(1);	break;
+			case KeyEvent.VK_RIGHT: myCamera.enableTurning(); myCamera.setRotDirection(-1); break;
+			case KeyEvent.VK_F	  : myCamera.togglePerspective();
 		}
 		double xdim, zdim;
 		double[] my_pos = myCamera.getGlobalPosition();
