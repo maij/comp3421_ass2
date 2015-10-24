@@ -83,7 +83,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //		  drawWorldObjects();
 //		  drawTrees(myTerrain.trees());
 		  
-		  myBeast = new BeastObject(GameObject.ROOT);
+		  myBeast = new BeastObject(GameObject.ROOT, new Function<double[], Double>() {
+				@Override
+				public Double apply(double[] t) {
+					return myTerrain.altitude(t[0], t[1]);
+				}
+			  });
 		  myBeast.translate(-5, 0, -5);
 //		  terrain.translate(5, 0, 5);
 		  
@@ -155,7 +160,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	        mySunColour[1] = (float)Math.cos(time/1000.0 /secInDay  *Math.PI*2)/2 + 0.2f;
 	        mySunColour[2] = (float)Math.cos(time/1000.0 /secInDay  *Math.PI*2);
 	        
-//	        mySun = MathUtil.normaliseAngleArray(mySun);
 	        System.out.printf("x = %f, y= %f\n", mySun[0], mySun[1]);
         }
         // take a copy of the ALL_OBJECTS list to avoid errors 
@@ -195,14 +199,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	        
 //			gl.glDisable(GL2.GL_LIGHTING);
 //			gl.glEnable(GL2.GL_LIGHTING);
-		} else {
+		} else if (isTimePassing) {
 			gl.glEnable(GL2.GL_LIGHT0);
 			gl.glDisable(GL2.GL_LIGHT1);
-			gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{1.0f,1.0f,1.0f,1.0f}, 0);
-			
-		}
-		gl.glDisable(GL2.GL_LIGHTING);
-		if (isTimePassing) {
 			float sunStrength = (mySun[1]/100 + 1)/2;
 			if (sunStrength < 0) {
 				sunStrength = 0;
@@ -211,6 +210,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			System.out.printf("amb: %f\n", sunStrength);
 			
 			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, ambient, 0);
+		} else {
+			// Normal mode
+			gl.glEnable(GL2.GL_LIGHT0);
+			gl.glDisable(GL2.GL_LIGHT1);
+			gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{0.5f,0.5f,0.5f,0.5f}, 0);
+			
 		}
 		// Add textures to objects
         terrain.setTexture(myTextures[0]);

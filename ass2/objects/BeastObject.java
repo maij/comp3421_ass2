@@ -3,6 +3,8 @@ package ass2.objects;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Random;
+import java.util.function.Function;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -10,7 +12,6 @@ import javax.media.opengl.GL2;
 import com.jogamp.common.nio.Buffers;
 
 import ass2.spec.Shader;
-import ass2.spec.Texture;
 
 // Must use VBOs
 public class BeastObject extends GameObject {
@@ -20,7 +21,7 @@ public class BeastObject extends GameObject {
     private static final float LEG_INSET = 0.15f;
     private static final float LEG_WIDTH = 0.3f;
     private static final float LEG_HEIGHT = 0.5f;
-    
+    static double updateTimeout = 0;
     private static final float BODY_WIDTH = 1.0f;
     private static final float BODY_LENGTH = 2.0f;
     private static final float BODY_HEIGHT = 1.0f;
@@ -30,9 +31,9 @@ public class BeastObject extends GameObject {
     private static final float FACE_HEIGHT = 0.8f;
     private static final float FACE_INSET = 0.2f;
     
-    
+    private Function<double[], Double> altFun;
     private int shaderprogram;
-    private float[] vertices = {
+    private static final float[] vertices = {
     		// Main Body
     		// Bottom
     		0		  ,LEG_HEIGHT ,0,
@@ -98,7 +99,7 @@ public class BeastObject extends GameObject {
     		
     };
     
-    private float texCoords[] =  {
+    private static final float texCoords[] =  {
     		// 8 Vertices for all rectangular prisms
     		0, 0.5f, 1,0.5f, 1,0.25f, 0,0.35f,
     		0,0.75f, 1,0.75f, 1,1, 0,0,
@@ -117,33 +118,21 @@ public class BeastObject extends GameObject {
     		
     		0, 0.5f, 1,0.5f, 1,0.25f, 0,0.35f,
     		0,0.75f, 1,0.75f, 1,1, 0,0,
-//    		
-//    		0,0, 0,1, 1,1, 1,0,
-//    		0,0, 0,1, 1,1, 1,0,
-//
-//    		0,0, 0,1, 1,1, 1,0,
-//    		0,0, 0,1, 1,1, 1,0,
-//    		
-//    		0,0, 0,1, 1,1, 1,0,
-//    		0,0, 0,1, 1,1, 1,0,
-//    		
-//    		0,0, 0,1, 1,1, 1,0,
-//    		0,0, 0,1, 1,1, 1,0,
-
 	};
     
     private short[] vertex_indices;
     
     private FloatBuffer vertexBuffer = Buffers.newDirectFloatBuffer(vertices);
     private FloatBuffer texBuffer = Buffers.newDirectFloatBuffer(texCoords);
-    private ShortBuffer vertIndicesBuffer; //= Buffers.newDirectShortBuffer(vertex_indices);
+    private ShortBuffer vertIndicesBuffer;
 	
     int bufferIds[];
     int texUnitLoc;
     int texUnitLoc2;
     
-    public BeastObject(GameObject parent) {
+    public BeastObject(GameObject parent, Function<double[], Double> f) {
 		super(parent);
+		altFun = f;
 		vertex_indices = new short[NUM_BODY_SEGMENTS*6*4];
 		for (short i = 0; i < NUM_BODY_SEGMENTS; i++) {
 			int seg_vert_offset = i*8;
@@ -257,6 +246,21 @@ public class BeastObject extends GameObject {
     	gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
     	gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 
+    }
+    double x = 0, y = 0, z = 0;
+    @Override
+    public void update(double dt) {
+    	updateTimeout += dt;
+    	if (updateTimeout > 1) { 
+    		updateTimeout = 0;
+	    	Random r = new Random(System.currentTimeMillis());
+	    	x = r.nextDouble() - 0.5;
+	    	z = r.nextDouble() - 0.5;
+    	}
+
+    	double[] p = this.getGlobalPosition();
+    	y = altFun.apply(new double[]{p[0],p[2]});
+    	this.translate(x*dt*4, y-p[1], z*dt*4);
     }
 	
 }
