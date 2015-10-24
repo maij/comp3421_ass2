@@ -31,10 +31,10 @@ public class Camera extends GameObject {
 	    
 	    public Camera(GameObject parent, Function<double[], Double> f) {
 	        super(parent);
-
+	        this.translate(0, myHeight, 0);
 	        myBackground = new float[]{1,1,1,1}; // Default to white background
-	        myBody = new PlayerObject(this);
-	        myBody.translate(0, 0, -1);
+	        myBody = new PlayerObject(this, f);
+	        myBody.translate(0, -myHeight, -1.5);
 	        myBody.toggleShowing();
 	        altFun = f;
 	        // Note: Replace this by parent's matrix
@@ -79,10 +79,12 @@ public class Camera extends GameObject {
 	    
 	    public void togglePerspective() {
 	    	if (isFirstPerson) {
-	    		this.translate(-2*Math.cos(getRotation()[1]*Math.PI/180.0), 1, -2*Math.sin(getRotation()[1]*Math.PI/180.0));
+	    		this.translate(0, 1, 0);
+//	    		this.translate(-2*Math.cos(getRotation()[1]*Math.PI/180.0), 1, -2*Math.sin(getRotation()[1]*Math.PI/180.0));
 //	    		this.rotafte(new double[]{-26,0,0});
 	    	} else {
-	    		this.translate(2*Math.cos(getRotation()[1]*Math.PI/180.0), -1, 2*Math.sin(getRotation()[1]*Math.PI/180.0));
+	    		this.translate(0, -1, 0);
+//	    		this.translate(2*Math.cos(getRotation()[1]*Math.PI/180.0), -1, 2*Math.sin(getRotation()[1]*Math.PI/180.0));
 //	    		this.rotate(new double[]{26,0,0});
 //	    		this.rotate(new double[]{0,0,0});
 	    	}
@@ -125,9 +127,9 @@ public class Camera extends GameObject {
 			
 			double[] centre = MathUtil.multiply(MathUtil.rotationMatrix(getRotation()), new double[]{0,0,-1,0});
 			if (!isFirstPerson) {
-				y += 1;
-				x -= 2*Math.cos(getRotation()[1]*Math.PI/180.0);
-				z -= 2*Math.sin(getRotation()[1]*Math.PI/180.0);
+//				y += 1;
+//				x -= 2*Math.cos(getRotation()[1]*Math.PI/180.0);
+//				z -= 2*Math.sin(getRotation()[1]*Math.PI/180.0);
 				centre[1] -= 0.2;
 			}
 			myGLU.gluLookAt(
