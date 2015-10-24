@@ -100,53 +100,35 @@ public class BeastObject extends GameObject {
     
     private float texCoords[] =  {
     		// 8 Vertices for all rectangular prisms
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
+    		0, 0.5f, 1,0.5f, 1,0.25f, 0,0.35f,
+    		0,0.75f, 1,0.75f, 1,1, 0,0,
     		
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
+    		0, 0.5f, 1,0.5f, 1,0.25f, 0,0.35f,
+    		0,0.75f, 1,0.75f, 1,1, 0,0,
 
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
+    		0, 0.5f, 1,0.5f, 1,0.25f, 0,0.35f,
+    		0,0.75f, 1,0.75f, 1,1, 0,0,
     		
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
+    		0, 0.5f, 1,0.5f, 1,0.25f, 0,0.35f,
+    		0,0.75f, 1,0.75f, 1,1, 0,0,
     		
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
-    		0,0, 0,1, 1,1, 1,0,
+    		0, 0.5f, 1,0.5f, 1,0.25f, 0,0.35f,
+    		0,0.75f, 1,0.75f, 1,1, 0,0,
+    		
+    		0, 0.5f, 1,0.5f, 1,0.25f, 0,0.35f,
+    		0,0.75f, 1,0.75f, 1,1, 0,0,
+//    		
+//    		0,0, 0,1, 1,1, 1,0,
+//    		0,0, 0,1, 1,1, 1,0,
+//
+//    		0,0, 0,1, 1,1, 1,0,
+//    		0,0, 0,1, 1,1, 1,0,
+//    		
+//    		0,0, 0,1, 1,1, 1,0,
+//    		0,0, 0,1, 1,1, 1,0,
+//    		
+//    		0,0, 0,1, 1,1, 1,0,
+//    		0,0, 0,1, 1,1, 1,0,
 
 	};
     
@@ -160,13 +142,8 @@ public class BeastObject extends GameObject {
     int texUnitLoc;
     int texUnitLoc2;
     
-    GameObject[] myBody = new GameObject[0];
-    
     public BeastObject(GameObject parent) {
 		super(parent);
-//		for (int i = 0; i < vertices.length; i++) {
-//			System.out.printf("%f\n", vertices[i]);
-//		}
 		vertex_indices = new short[NUM_BODY_SEGMENTS*6*4];
 		for (short i = 0; i < NUM_BODY_SEGMENTS; i++) {
 			int seg_vert_offset = i*8;
@@ -208,43 +185,25 @@ public class BeastObject extends GameObject {
 			vertex_indices[current_face+3] = (short) (seg_vert_offset + 5);
 		}
 		
-		for (int i = 0; i < vertex_indices.length; i++) {
-			if (i % 4 == 0) {
-				System.out.printf("face: %d\n", i/4);
-			}
-			System.out.println(vertex_indices[i]);
-		}
 		vertIndicesBuffer = Buffers.newDirectShortBuffer(vertex_indices);
-//		myBody = new CubeObject[NUM_BODY_SEGMENTS];
-//		for (int i = 0; i < NUM_BODY_SEGMENTS; i++) {
-//			myBody[i] = new CubeObject(this);
-//		}
-//		// Four legs
-//		myBody[0].translate(-0.4, 0, -0.4);
-//		myBody[1].translate(-0.4, 0,  0.4);
-//		myBody[2].translate( 0.4, 0, -0.4);
-//		myBody[3].translate( 0.4, 0,  0.4);
-//		myBody[0].scale(0.25);
-//		myBody[1].scale(0.25);
-//		myBody[2].scale(0.25);
-//		myBody[3].scale(0.25);
-//		// main body
-//		myBody[4].scale(1);	
-//		myBody[4].translate(0, 0.25, 0);
-//		// The head
-//		myBody[5].translate(0.5, 0.75, 0);
-//		myBody[5].scale(0.5);
 	}
     
-    @Override
-    public void setTexture(Texture t) {
-    	for(GameObject go: myBody) {
-    		go.setTexture(t);
-    	}
+    private void setMaterial(GL2 gl) {
+    	// Default Material property vectors.
+    	float matAmbAndDif1[] = {1.0f, 1.0f, 1.0f, 0.0f};
+    	float matAmbAndDif2[] = {0.0f, 0.0f, 0.0f, 0.0f};
+    	float matSpec[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    	float matShine[] = { 10.0f };
+    	// Material properties.
+    	gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, matAmbAndDif1,0);
+    	gl.glMaterialfv(GL2.GL_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, matAmbAndDif2,0);
+    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, matSpec,0);
+    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SHININESS, matShine,0);
     }
     
     @Override
     public void drawSelf(GL2 gl) {
+    	setMaterial(gl);
     	try {
    		 shaderprogram = Shader.initShaders(gl, VERTEX_SHADER, FRAGMENT_SHADER);
         }

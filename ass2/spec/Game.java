@@ -198,9 +198,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		} else {
 			gl.glEnable(GL2.GL_LIGHT0);
 			gl.glDisable(GL2.GL_LIGHT1);
-			gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{0.0f,0.0f,0.0f,0.01f}, 0);
+			gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{1.0f,1.0f,1.0f,1.0f}, 0);
 			
 		}
+		gl.glDisable(GL2.GL_LIGHTING);
 		if (isTimePassing) {
 			float sunStrength = (mySun[1]/100 + 1)/2;
 			if (sunStrength < 0) {
