@@ -160,7 +160,7 @@ public class Camera extends GameObject {
 	        gl.glMatrixMode(GL2.GL_PROJECTION);
 	    	gl.glLoadIdentity();
 	        GLU myGLU = new GLU();
-	    	myGLU.gluPerspective(40, aspect, 0.1, 160);
+	    	myGLU.gluPerspective(40, aspect, 0.1, 50);
 	    }
 	    
 	    @Override

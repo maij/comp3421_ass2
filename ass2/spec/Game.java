@@ -35,12 +35,14 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private static Camera myCamera;
     private long myTime;
     private Texture[] myTextures;
+    private BeastObject myBeast;
     private TerrainGameObject terrain;
     private CubeObject[] cubes = new CubeObject[]{};
     private SphereObject[] spheres = new SphereObject[]{};
     private float[] mySun;
     private float[] mySunColour = new float[]{1.0f,1.0f,1.0f};
     private static double secInDay = 10;
+    private boolean isNight = false;
     
     String[] textureFiles = new String[]{
     		"./textures/grass.png",
@@ -49,10 +51,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     		"./textures/road.png",
     		"./textures/brushed_gold.png",
     		"./textures/gradient_gold.png",
+    		"./textures/cow.png"
     };
     
 
-    private static final int NUM_TEXTURES = 6;
+    private static final int NUM_TEXTURES = 7;
     
     private boolean isTimePassing = false;
     
@@ -80,7 +83,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //		  drawWorldObjects();
 //		  drawTrees(myTerrain.trees());
 		  
-		  
+		  myBeast = new BeastObject(GameObject.ROOT);
+		  myBeast.translate(-1, 0, -1);
 //		  terrain.translate(5, 0, 5);
 		  
 		  myCamera = new Camera(GameObject.ROOT, new Function<double[], Double>() {
@@ -148,7 +152,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	        mySun[1] = (float)Math.cos(time/1000.0 /secInDay  *Math.PI*2)*(-100);
 	        mySun[2] = (1)*(-100);
 	        mySunColour[0] = (float)Math.cos(time/1000.0 /secInDay  *Math.PI*2)/2 + 0.3f;
-	        mySunColour[1] = (float)Math.cos(time/1000.0 /secInDay  *Math.PI*2);
+	        mySunColour[1] = (float)Math.cos(time/1000.0 /secInDay  *Math.PI*2)/2 + 0.2f;
 	        mySunColour[2] = (float)Math.cos(time/1000.0 /secInDay  *Math.PI*2);
 	        
 //	        mySun = MathUtil.normaliseAngleArray(mySun);
@@ -175,6 +179,28 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		float[] ambient;
 //		gl.glEnable(GL2.GL_LIGHT_MODEL_AMBIENT);
 //		gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{0.5f,0.5f,0.1f,0.1f}, 0);
+		if (isNight) {
+			gl.glDisable(GL2.GL_LIGHT0);
+			gl.glEnable(GL2.GL_LIGHT1);
+			double[] posd = myCamera.getGlobalPosition();
+			float[] posf = new float[]{(float)posd[0], (float)posd[1], (float)posd[2]};
+			double[] centre = MathUtil.multiply(MathUtil.rotationMatrix(myCamera.getRotation()), new double[]{0,0,-1,0});
+			float[] dirf = new float[]{(float)centre[0], (float)centre[1], (float)centre[2]};
+			gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{0.3f,0.3f,0.3f,1.0f}, 0);
+			
+			gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, posf, 0);
+			gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPOT_DIRECTION, dirf, 0);
+	        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPOT_EXPONENT, new float[]{75.0f}, 0);
+	        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPOT_CUTOFF, new float[]{70.0f}, 0);
+	        
+//			gl.glDisable(GL2.GL_LIGHTING);
+//			gl.glEnable(GL2.GL_LIGHTING);
+		} else {
+			gl.glEnable(GL2.GL_LIGHT0);
+			gl.glDisable(GL2.GL_LIGHT1);
+			gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{0.0f,0.0f,0.0f,0.01f}, 0);
+			
+		}
 		if (isTimePassing) {
 			float sunStrength = (mySun[1]/100 + 1)/2;
 			if (sunStrength < 0) {
@@ -182,14 +208,15 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			}
 			ambient = new float[]{mySunColour[0],mySunColour[1],mySunColour[2], 0};
 			System.out.printf("amb: %f\n", sunStrength);
-			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambient, 0);
+			
 			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, ambient, 0);
-	        
 		}
 		// Add textures to objects
         terrain.setTexture(myTextures[0]);
         terrain.setTreeTextures(myTextures[1], myTextures[2]);
         terrain.setRoadTexture(myTextures[3]);
+        // My cow
+        myBeast.setTexture(myTextures[6]);
         // My teapot.
 		myCamera.setTexture(myTextures[4]);
         for (CubeObject c: cubes) {
@@ -198,7 +225,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         for (SphereObject s: spheres) {
         	s.setTexture(myTextures[0]);
         }
-
         GameObject.ROOT.draw(gl);
 	}
 
@@ -232,23 +258,22 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glEnable(GL2.GL_LIGHTING);
 		// Specified as a direction
 		mySun = new float[]{-100*myTerrain.getSunlight()[0], -100*myTerrain.getSunlight()[1], -100*myTerrain.getSunlight()[2], 0};
-		gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{0.5f,0.5f,0.5f,0.2f}, 0);
+		
+		gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, new float[]{0.5f,0.5f,0.5f,0.5f}, 0);
+		
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION , mySun, 0);
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0);
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, new float[]{0.0f, 0.0f, 0.0f, 0.0f}, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0);
         
+        
 		gl.glEnable(GL2.GL_LIGHT0);
-		
-    	// Material property vectors.
-
-    	float matAmbAndDif2[] = {0f, 0f, 0f, 0f};
+		gl.glDisable(GL2.GL_LIGHT1);
+    	// Default Material property vectors.
+    	float matAmbAndDif1[] = {1.0f, 1.0f, 1.0f, 0.0f};
+    	float matAmbAndDif2[] = {1.0f, 1.0f, 1.0f, 0.0f};
     	float matSpec[] = { 1.0f, 1.0f, 1.0f, 1.0f };
     	float matShine[] = { 0.0f };
-//
-//    	// Material property vectors.
-    	float matAmbAndDif1[] = {1.0f, 1.0f, 1.0f, 0.0f};
-//
-//    	// Material properties.
+    	// Material properties.
     	gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, matAmbAndDif1,0);
     	gl.glMaterialfv(GL2.GL_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, matAmbAndDif2,0);
     	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, matSpec,0);
@@ -285,26 +310,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			case KeyEvent.VK_LEFT : myCamera.enableTurning(); myCamera.setRotDirection(1);	break;
 			case KeyEvent.VK_RIGHT: myCamera.enableTurning(); myCamera.setRotDirection(-1); break;
 			case KeyEvent.VK_P	  : myCamera.togglePerspective(); break;
-			case KeyEvent.VK_T	  : isTimePassing = !isTimePassing;
+			case KeyEvent.VK_T	  : isTimePassing = !isTimePassing; break;
+			case KeyEvent.VK_N	  : isNight = !isNight; break;
 		}
-		double xdim, zdim;
-		double[] my_pos = myCamera.getGlobalPosition();
-		double[] t_pos = terrain.getGlobalPosition();
-		xdim = myTerrain.size().getWidth();
-		zdim = myTerrain.size().getHeight();
-		// Am I in the terrain?
-//		System.out.println(my_pos[1]);
-//		System.out.printf("mpx = %f, mpz = %f, tpx = %f, tpz = %f\n", my_pos[0], my_pos[2], t_pos[0], t_pos[2]);
-		if ((my_pos[0] > t_pos[0] && my_pos[0] < t_pos[0] + xdim) &&
-			(my_pos[2] > t_pos[2] && my_pos[2] < t_pos[2] + zdim)) {
-//			myCamera.translate(0, myTerrain.altitude(my_pos[0], my_pos[2]) + myHeight - my_pos[1], 0);
-//			myCamera.setPosition(my_pos[0], myTerrain.altitude(my_pos[0], my_pos[2]) + myHeight, my_pos[2]);
-//			System.out.printf("interp = %f\n", myTerrain.altitude(my_pos[0], my_pos[2]));
-		} else {
-//			myCamera.setPosition(my_pos[0], myHeight, my_pos[2]);
-		}
-//		System.out.println(myCamera.getGlobalPosition()[1]);
-		
 	}
 
 	@Override

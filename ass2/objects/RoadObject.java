@@ -41,7 +41,7 @@ public class RoadObject extends GameObject {
 				m.addUVCoord(new double[]{(double)j/((double)(numSplines-1)), (1-i/(1-delta_t)) });
 				
 				m.addVertex(new double[]{p[0],
-										 f.apply( r.point(i*r.size())  ) + y_offset,
+										 f.apply( p  ) + y_offset,
 										 p[1]});
 			}
 //			System.out.printf("%f\n", (1-i*(1/(1-delta_t))));
@@ -65,6 +65,16 @@ public class RoadObject extends GameObject {
 	public void drawSelf(GL2 gl) {
 		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, super.getTextureID());
+		float matAmbAndDif1[] = {0.8f, 1.0f, 0.8f, 1.0f};
+    	float matAmbAndDif2[] = {0f, 0f, 0f, 0f};
+    	float matSpec[] = { 1.0f, 1.0f, 1.0f, 0.5f };
+    	float matShine[] = { 0.0f };
+    	// Material properties.
+    	gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, matAmbAndDif1,0);
+    	gl.glMaterialfv(GL2.GL_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, matAmbAndDif2,0);
+    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, matSpec,0);
+    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SHININESS, matShine,0);
+    	
 		m.draw(gl);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 	}
