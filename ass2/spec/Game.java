@@ -84,7 +84,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 //		  drawTrees(myTerrain.trees());
 		  
 		  myBeast = new BeastObject(GameObject.ROOT);
-		  myBeast.translate(-1, 0, -1);
+		  myBeast.translate(-5, 0, -5);
 //		  terrain.translate(5, 0, 5);
 		  
 		  myCamera = new Camera(GameObject.ROOT, new Function<double[], Double>() {
@@ -252,8 +252,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			i++;
 		}
 		
-		gl.glEnable(GL2.GL_CULL_FACE);
-		gl.glCullFace(GL2.GL_BACK);
+//		gl.glEnable(GL2.GL_CULL_FACE);
+//		gl.glCullFace(GL2.GL_BACK);
 		
 		gl.glEnable(GL2.GL_LIGHTING);
 		// Specified as a direction
