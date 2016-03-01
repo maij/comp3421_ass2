@@ -80,7 +80,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		  panel.addGLEventListener(this);
 		  
 		  terrain = new TerrainGameObject(GameObject.ROOT, myTerrain);
-//		  drawWorldObjects();
+		  drawWorldObjects();
 //		  drawTrees(myTerrain.trees());
 		  
 		  myBeast = new BeastObject(GameObject.ROOT, new Function<double[], Double>() {
@@ -129,15 +129,17 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     }
     
     public void drawWorldObjects() {
-    	CubeObject cubeFront = new CubeObject(GameObject.ROOT);
-    	CubeObject cubeBack = new CubeObject(GameObject.ROOT);
-    	CubeObject cubeLeft = new CubeObject(GameObject.ROOT);
-    	CubeObject cubeRight = new CubeObject(GameObject.ROOT);
-        cubeFront.translate(0, 0, -3);
-        cubeBack.translate(0, 0, 3);
-        cubeLeft.translate(-3, 0, 0);
-        cubeRight.translate(3, 0, 0);
-        cubes = new CubeObject[]{cubeFront, cubeBack, cubeLeft, cubeRight};
+//    	CubeObject cubeFront = new CubeObject(GameObject.ROOT);
+//    	CubeObject cubeBack = new CubeObject(GameObject.ROOT);
+//    	CubeObject cubeLeft = new CubeObject(GameObject.ROOT);
+//    	CubeObject cubeRight = new CubeObject(GameObject.ROOT);
+//        cubeFront.translate(0, 0, -3);
+//        cubeBack.translate(0, 0, 3);
+//        cubeLeft.translate(-3, 0, 0);
+//        cubeRight.translate(3, 0, 0);
+//        cubes = new CubeObject[]{cubeFront, cubeBack, cubeLeft, cubeRight};
+        RainDroplet d = new RainDroplet(GameObject.ROOT);
+        d.translate(-2, 0, -2);
 //        GameObject axes = new Axes(GameObject.ROOT);
 //        axes.scale(2);
         
@@ -231,6 +233,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         for (SphereObject s: spheres) {
         	s.setTexture(myTextures[0]);
         }
+        gl.glDisable(GL2.GL_BLEND);
+		
         GameObject.ROOT.draw(gl);
 	}
 
@@ -258,9 +262,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			i++;
 		}
 		
-//		gl.glEnable(GL2.GL_CULL_FACE);
-//		gl.glCullFace(GL2.GL_BACK);
-		
+		gl.glEnable(GL2.GL_CULL_FACE);
+		gl.glCullFace(GL2.GL_BACK);
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnable(GL2.GL_LIGHTING);
 		// Specified as a direction
 		mySun = new float[]{-100*myTerrain.getSunlight()[0], -100*myTerrain.getSunlight()[1], -100*myTerrain.getSunlight()[2], 0};

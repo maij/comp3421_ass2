@@ -217,6 +217,8 @@ public class BeastObject extends GameObject {
      	
     	gl.glUseProgram(shaderprogram);
     	gl.glUniform1i(texUnitLoc , 0);
+    	int vPos = gl.glGetAttribLocation(shaderprogram, "vertexPos");
+    	gl.glEnableVertexAttribArray(vPos);
     	
 
     	// Set current texture
@@ -260,7 +262,7 @@ public class BeastObject extends GameObject {
 
     	double[] p = this.getGlobalPosition();
     	y = altFun.apply(new double[]{p[0],p[2]});
-    	this.translate(x*dt*4, y-p[1], z*dt*4);
+//    	this.translate(x*dt*4, y-p[1], z*dt*4);
     }
 	
 }
